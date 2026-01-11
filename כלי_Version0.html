@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כלי רב-תכליתי: חשבון, חיפוש, א"ת ב"ש, גימטריה, ספירה, המרה ועוד</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-color: #5a67d8;
+            --accent-color: #ff6b6b;
+            --light-bg: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2d3748;
+            --shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+            --border-radius: 25px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --sidebar-bg: linear-gradient(135deg, #f8f9fa 0%, #e2e8f0 100%);
+            --button-bg: linear-gradient(135deg, #667eea, #764ba2);
+            --button-hover: linear-gradient(135deg, #5a6fd8, #6a419a);
+            --icon-color: #fff;
+            --particle-color: rgba(102, 126, 234, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --light-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            --container-bg: rgba(26, 32, 44, 0.95);
+            --text-color: #e2e8f0;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --glass-bg: rgba(26, 32, 44, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            --button-bg: linear-gradient(135deg, #5a6fd8, #6a419a);
+            --button-hover: linear-gradient(135deg, #4a5fc8, #5a318a);
+            --icon-color: #e2e8f0;
+            --particle-color: rgba(90, 103, 216, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            background: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: stretch;
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, var(--particle-color) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, var(--particle-color) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, var(--particle-color) 0%, transparent 50%);
+            animation: particles 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes particles {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            animation: slideInRight 0.8s ease-out;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) rotateY(90deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) rotateY(0deg);
+            }
+        }
+
+        .sidebar-button {
+            background: var(--button-bg);
+            color: var(--icon-color);
+            border: none;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .sidebar-button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .sidebar-button.active {
+            background: var(--accent-color);
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sidebar-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .sidebar-button:hover::before {
+            left: 100%;
+        }
+
+        .sidebar-button i {
+            font-size: 14px;
+            min-width: 18px;
+        }
+
+        .theme-toggle {
+            margin-top: 15px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            background: #ff5252;
+            transform: scale(1.05) rotate(5deg);
+        }
+
+        .theme-toggle i {
+            font-size: 14px;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 340px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: var(--container-bg);
+            backdrop-filter: blur(30px);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 700px;
+            animation: fadeInScale 1s ease-out;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--primary-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 0;
+            background: linear-gradient(45deg, transparent 49%, rgba(102, 126, 234, 0.05) 50%, transparent 51%);
+            animation: shimmer 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9) rotateX(10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+        }
+
+        h2 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+            font-size: 2.2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from {
+                filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+                transform: scale(1);
+            }
+            to {
+                filter: drop-shadow(0 0 25px rgba(102, 126, 234, 0.9));
+                transform: scale(1.02);
+            }
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="file"],
+        select,
+        button {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            transition: var(--transition);
+            outline: none;
+            font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+            animation: inputGlow 0.5s ease-out;
+        }
+
+        @keyframes inputGlow {
+            0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.15); }
+            100% { box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1); }
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            margin-top: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.7s;
+        }
+
+        button:focus:not(:active)::before {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(100, 100);
+                opacity: 0;
+            }
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23667eea%22%20d%3D%22M6%209L1%204h10L6%209z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position-x: 15px;
+            background-position-y: center;
+            padding-right: 35px;
+            cursor: pointer;
+        }
+
+        #result-container {
+            transition: var(--transition);
+            margin-top: 15px;
+        }
+
+        #result-text {
+            font-size: 16px;
+            color: var(--text-color);
+            white-space: pre-wrap;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            transition: var(--transition);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            animation: resultFadeIn 0.8s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes resultFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) rotateY(10deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .highlight {
+            background: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: highlightPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+                transform: scale(1.05);
+            }
+        }
+
+        .option-group {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--border-radius);
+            animation: slideDown 0.6s ease-out;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .option-group label {
+            margin-right: 10px;
+            margin-top: 8px;
+        }
+
+        #qr-code-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            display: none;
+            animation: qrFadeIn 0.8s ease-out;
+        }
+
+        @keyframes qrFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.7) rotate(15deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        #qr-code {
+            max-width: 200px;
+            max-height: 200px;
+            padding: 10px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .download-btn, .scan-btn, .save-pdf-btn, .convert-image-btn {
+            padding: 8px 12px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 14px;
+        }
+
+        .download-btn:hover, .scan-btn:hover, .save-pdf-btn:hover, .convert-image-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .action-header {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .action-header::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        /* מדיה קוורי לתצוגות קטנות */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                margin-bottom: 15px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                max-height: none;
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .sidebar-button {
+                flex: 1 1 180px;
+                margin: 3px;
+                font-size: 11px;
+                padding: 8px;
+            }
+
+            #qr-code {
+                max-width: 150px;
+                max-height: 150px;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            h2 {
+                font-size: 1.8em;
+            }
+        }
+
+        /* טעינת פונט רוביק */
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap');
+    </style>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/instascan@1.4.3/dist/instascan.min.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js"></script>
+</head>
+
+<body data-lang="he" dir="rtl">
+    <div class="sidebar">
+        <div id="language-select-container">
+            <label for="language-select">שפה:</label>
+            <select id="language-select">
+                <option value="he">עברית</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <button class="sidebar-button" data-action="calculate" data-i18n="actionCalculate">
+            <i class="fas fa-calculator"></i> חשבון
+        </button>
+        <button class="sidebar-button" data-action="find" data-i18n="actionFind">
+            <i class="fas fa-search"></i> חפש מילה
+        </button>
+        <button class="sidebar-button" data-action="reverse" data-i18n="actionReverse">
+            <i class="fas fa-undo"></i> הפוך סדר טקסט
+        </button>
+        <button class="sidebar-button" data-action="gematria" data-i18n="actionGematria">
+            <i class="fas fa-star-of-david"></i> גימטריה
+        </button>
+        <button class="sidebar-button" data-action="atbash_letters" data-i18n="actionAtbash">
+            <i class="fas fa-exchange-alt"></i> א"ת ב"ש
+        </button>
+        <button class="sidebar-button" data-action="wordCount" data-i18n="actionWordCount">
+            <i class="fas fa-count"></i> ספירת מילים ואותיות
+        </button>
+        <button class="sidebar-button" data-action="lengthConvert" data-i18n="actionLengthConvert">
+            <i class="fas fa-balance-scale"></i> המרת אורך
+        </button>
+        <button class="sidebar-button" data-action="qrCode" data-i18n="actionQrCode">
+            <i class="fas fa-qrcode"></i> יצירת קוד QR
+        </button>
+        <button class="sidebar-button" data-action="financialCalculator" data-i18n="actionFinancialCalculator">
+            <i class="fas fa-dollar-sign"></i> מחשבון פיננסי
+        </button>
+        <button class="sidebar-button" data-action="bmi" data-i18n="actionBMI">
+            <i class="fas fa-weight"></i> חישוב BMI
+        </button>
+        <button class="sidebar-button" data-action="temperatureConvert" data-i18n="actionTemperatureConvert">
+            <i class="fas fa-thermometer-half"></i> המרת טמפרטורה
+        </button>
+        <button class="sidebar-button" data-action="dayOfWeek" data-i18n="actionDayOfWeek">
+            <i class="fas fa-calendar-day"></i> יום בשבוע מתאריך
+        </button>
+        <button class="sidebar-button" data-action="advancedTextEdit" data-i18n="actionAdvancedTextEdit">
+            <i class="fas fa-edit"></i> עריכת טקסט מתקדמת
+        </button>
+        <button class="sidebar-button" data-action="imageConverter" data-i18n="actionImageConverter">
+            <i class="fas fa-images"></i> ממיר תמונות
+        </button>
+        <button class="sidebar-button" data-action="mediaConverter" data-i18n="actionMediaConverter">
+            <i class="fas fa-file-video"></i> ממיר מדיה
+        </button>
+        <button class="theme-toggle" id="theme-toggle">
+            <i class="fas fa-moon"></i> מצב כהה
+        </button>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h2 data-i18n="title">כלי רב-תכליתי</h2>
+
+            <div id="input-options" class="option-group">
+                <label for="mainInput" data-i18n="inputLabel">הכנס טקסט או ערך:</label>
+                <input type="text" id="mainInput" data-i18n-placeholder="inputPlaceholder"
+                    placeholder="הזן טקסט או מספר לפעולה הרצויה">
+            </div>
+
+            <div id="find-options" class="option-group">
+                <div class="action-header" data-i18n="actionFind">חפש מילה</div>
+                <label for="mainInputFind" data-i18n="inputLabel">הכנס טקסט לחיפוש בו:</label>
+                <textarea id="mainInputFind" data-i18n-placeholder="findTextPlaceholder"
+                    placeholder="הזן את הטקסט שבו תרצה לחפש"></textarea>
+                <label for="wordToSearch" data-i18n="findWordLabel">מילה לחיפוש:</label>
+                <input type="text" id="wordToSearch" data-i18n-placeholder="findWordPlaceholder"
+                    placeholder="הכנס מילה לחיפוש">
+            </div>
+
+            <div id="calculate-options" class="option-group">
+                <div class="action-header" data-i18n="actionCalculate">חשבון</div>
+                <label for="mainInputCalc" data-i18n="calcLabel">הכנס תרגיל חשבוני:</label>
+                <input type="text" id="mainInputCalc" data-i18n-placeholder="calcPlaceholder"
+                    placeholder="לדוגמה: 5 + 3 * 2">
+            </div>
+
+            <div id="reverse-options" class="option-group">
+                <div class="action-header" data-i18n="actionReverse">הפוך סדר טקסט</div>
+                <label for="mainInputReverse" data-i18n="reverseLabel">הכנס טקסט להיפוך:</label>
+                <textarea id="mainInputReverse" data-i18n-placeholder="reversePlaceholder"
+                    placeholder="הכנס טקסט שברצונך להפוך את סדרו"></textarea>
+            </div>
+
+            <div id="gematria-options" class="option-group">
+                <div class="action-header" data-i18n="actionGematria">גימטריה</div>
+                <label for="mainInputGematria" data-i18n="gematriaLabel">הכנס טקסט בעברית לחישוב גימטריה:</label>
+                <input type="text" id="mainInputGematria" data-i18n-placeholder="gematriaPlaceholder"
+                    placeholder="הכנס טקסט בעברית">
+            </div>
+
+            <div id="atbash_letters-options" class="option-group">
+                <div class="action-header" data-i18n="actionAtbash">א"ת ב"ש</div>
+                <label for="mainInputAtbash" data-i18n="atbashLabel">הכנס טקסט בעברית להמרה לא"ת ב"ש:</label>
+                <textarea id="mainInputAtbash" data-i18n-placeholder="atbashPlaceholder"
+                    placeholder="הכנס טקסט בעברית להמרה"></textarea>
+            </div>
+
+            <div id="lengthConvert-options" class="option-group">
+                <div class="action-header" data-i18n="actionLengthConvert">המרת אורך</div>
+                <label for="mainInputLength" data-i18n="lengthValueLabel">הכנס ערך להמרה:</label>
+                <input type="text" id="mainInputLength" data-i18n-placeholder="lengthValuePlaceholder"
+                    placeholder="הכנס מספר">
+                <label for="length_from" data-i18n="lengthFromLabel">מ:</label>
+                <select id="length_from">
+                    <option value="cm" data-i18n="unitCentimeters">סנטימטרים</option>
+                    <option value="m" data-i18n="unitMeters">מטרים</option>
+                    <option value="km" data-i18n="unitKilometers">קילומטרים</option>
+                    <option value="inch" data-i18n="unitInches">אינצ'ים</option>
+                    <option value="foot" data-i18n="unitFeet">פיט</option>
+                    <option value="yard" data-i18n="unitYards">יארד</option>
+                    <option value="mile" data-i18n="unitMiles">מיילים</option>
+                </select>
+                <label for="length_to" data-i18n="lengthToLabel">ל:</label>
+                <select id="length_to">
+                    <option value="cm" data-i18n="unitCentimeters">סנטימטרים</option>
+                    <option value="m" data-i18n="unitMeters">מטרים</option>
+                    <option value="km" data-i18n="unitKilometers">קילומטרים</option>
+                    <option value="inch" data-i18n="unitInches">אינצ'ים</option>
+                    <option value="foot" data-i18n="unitFeet">פיט</option>
+                    <option value="yard" data-i18n="unitYards">יארד</option>
+                    <option value="mile" data-i18n="unitMiles">מיילים</option>
+                </select>
+            </div>
+
+            <div id="wordCount-options" class="option-group">
+                <div class="action-header" data-i18n="actionWordCount">ספירת מילים ואותיות</div>
+                <label for="mainInputWordCount" data-i18n="wordCountLabel">הכנס טקסט לספירה:</label>
+                <textarea id="mainInputWordCount" data-i18n-placeholder="wordCountPlaceholder"
+                    placeholder="הכנס טקסט לספירה"></textarea>
+            </div>
+
+            <div id="qrCode-options" class="option-group">
+                <div class="action-header" data-i18n="actionQrCode">יצירת קוד QR</div>
+                <label for="mainInputQrCode" data-i18n="qrCodeLabel">הכנס טקסט ליצירת קוד QR:</label>
+                <textarea id="mainInputQrCode" data-i18n-placeholder="qrCodePlaceholder"
+                    placeholder="הכנס טקסט ליצירת קוד QR"></textarea>
+                <div id="qr-code-container">
+                    <div id="qr-code"></div>
+                    <div class="download-buttons">
+                        <button class="download-btn" id="download-png">
+                            <i class="fas fa-download"></i> הורד כ-PNG
+                        </button>
+                        <button class="download-btn" id="download-pdf">
+                            <i class="fas fa-file-pdf"></i> הורד כ-PDF
+                        </button>
+                        <button class="scan-btn" id="scan-qr">
+                            <i class="fas fa-camera"></i> סרוק QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="financialCalculator-options" class="option-group">
+                <div class="action-header" data-i18n="actionFinancialCalculator">מחשבון פיננסי</div>
+                <label for="principal" data-i18n="principalLabel">סכום הקרן:</label>
+                <input type="text" id="principal" data-i18n-placeholder="principalPlaceholder" placeholder="הכנס סכום">
+                <label for="interestRate" data-i18n="interestRateLabel">שיעור ריבית שנתי (%):</label>
+                <input type="text" id="interestRate" data-i18n-placeholder="interestRatePlaceholder"
+                    placeholder="הכנס ריבית">
+                <label for="years" data-i18n="yearsLabel">מספר שנים:</label>
+                <input type="text" id="years" data-i18n-placeholder="yearsPlaceholder" placeholder="הכנס שנים">
+            </div>
+
+            <div id="bmi-options" class="option-group">
+                <div class="action-header" data-i18n="actionBMI">חישוב BMI</div>
+                <label for="weight" data-i18n="weightLabel">משקל (ק"ג):</label>
+                <input type="text" id="weight" data-i18n-placeholder="weightPlaceholder" placeholder="הכנס משקל">
+                <label for="height" data-i18n="heightLabel">גובה (ס"מ):</label>
+                <input type="text" id="height" data-i18n-placeholder="heightPlaceholder" placeholder="הכנס גובה">
+            </div>
+
+            <div id="temperatureConvert-options" class="option-group">
+                <div class="action-header" data-i18n="actionTemperatureConvert">המרת טמפרטורה</div>
+                <label for="mainInputTemp" data-i18n="tempValueLabel">הכנס ערך להמרה:</label>
+                <input type="text" id="mainInputTemp" data-i18n-placeholder="tempValuePlaceholder" placeholder="הכנס מספר">
+                <label for="temp_from" data-i18n="tempFromLabel">מ:</label>
+                <select id="temp_from">
+                    <option value="celsius">צלזיוס</option>
+                    <option value="fahrenheit">פרנהייט</option>
+                    <option value="kelvin">קלווין</option>
+                </select>
+                <label for="temp_to" data-i18n="tempToLabel">ל:</label>
+                <select id="temp_to">
+                    <option value="celsius">צלזיוס</option>
+                    <option value="fahrenheit">פרנהייט</option>
+                    <option value="kelvin">קלווין</option>
+                </select>
+            </div>
+
+            <div id="dayOfWeek-options" class="option-group">
+                <div class="action-header" data-i18n="actionDayOfWeek">יום בשבוע מתאריך</div>
+                <label for="dateInput" data-i18n="dateLabel">הכנס תאריך (YYYY-MM-DD):</label>
+                <input type="text" id="dateInput" data-i18n-placeholder="datePlaceholder" placeholder="הכנס תאריך">
+            </div>
+
+            <div id="advancedTextEdit-options" class="option-group">
+                <div class="action-header" data-i18n="actionAdvancedTextEdit">עריכת טקסט מתקדמת</div>
+                <label for="advancedAction" data-i18n="advancedActionLabel">בחר פעולה:</label>
+                <select id="advancedAction">
+                    <option value="cleanText" data-i18n="cleanText">ניקוי טקסט</option>
+                    <option value="findReplace" data-i18n="findReplace">החלפת טקסט</option>
+                    <option value="caseConvert" data-i18n="caseConvert">Case Converter</option>
+                    <option value="removeNikud" data-i18n="removeNikud">מסיר ניקוד</option>
+                </select>
+                <div id="cleanText-options" class="option-group">
+                    <label for="cleanTextInput" data-i18n="cleanTextLabel">הכנס טקסט לניקוי:</label>
+                    <textarea id="cleanTextInput" data-i18n-placeholder="cleanTextPlaceholder" placeholder="הכנס טקסט לניקוי"></textarea>
+                </div>
+                <div id="findReplace-options" class="option-group">
+                    <label for="findReplaceInput" data-i18n="findReplaceTextLabel">הכנס טקסט:</label>
+                    <textarea id="findReplaceInput" data-i18n-placeholder="findReplaceTextPlaceholder" placeholder="הכנס טקסט"></textarea>
+                    <label for="findWord" data-i18n="findWordLabel">מילה להחלפה:</label>
+                    <input type="text" id="findWord" data-i18n-placeholder="findWordPlaceholder" placeholder="מילה להחלפה">
+                    <label for="replaceWord" data-i18n="replaceWordLabel">מילה חדשה:</label>
+                    <input type="text" id="replaceWord" data-i18n-placeholder="replaceWordPlaceholder" placeholder="מילה חדשה">
+                </div>
+                <div id="caseConvert-options" class="option-group">
+                    <label for="caseConvertInput" data-i18n="caseConvertLabel">הכנס טקסט (אנגלית):</label>
+                    <textarea id="caseConvertInput" data-i18n-placeholder="caseConvertPlaceholder" placeholder="הכנס טקסט באנגלית"></textarea>
+                    <label for="caseType" data-i18n="caseTypeLabel">סוג המרה:</label>
+                    <select id="caseType">
+                        <option value="uppercase" data-i18n="uppercase">אותיות גדולות</option>
+                        <option value="lowercase" data-i18n="lowercase">אותיות קטנות</option>
+                    </select>
+                </div>
+                <div id="removeNikud-options" class="option-group">
+                    <label for="removeNikudInput" data-i18n="removeNikudLabel">הכנס טקסט עברי עם ניקוד:</label>
+                    <textarea id="removeNikudInput" data-i18n-placeholder="removeNikudPlaceholder" placeholder="הכנס טקסט עברי"></textarea>
+                </div>
+            </div>
+
+            <div id="imageConverter-options" class="option-group">
+                <div class="action-header" data-i18n="actionImageConverter">ממיר תמונות</div>
+                <label for="imageInput" data-i18n="imageLabel">העלה תמונה:</label>
+                <input type="file" id="imageInput" accept="image/*">
+                <label for="convertType" data-i18n="convertTypeLabel">סוג המרה:</label>
+                <select id="convertType">
+                    <option value="grayscale" data-i18n="grayscale">שחור לבן</option>
+                    <option value="invert" data-i18n="invert">הפוך צבעים</option>
+                    <option value="sepia" data-i18n="sepia">ספיה</option>
+                    <option value="png" data-i18n="toPng">המר ל-PNG</option>
+                    <option value="jpeg" data-i18n="toJpeg">המר ל-JPEG</option>
+                </select>
+                <div id="converted-image-container" style="margin-top: 15px; display: none;">
+                    <img id="converted-image" style="max-width: 300px; border-radius: var(--border-radius);">
+                    <button class="convert-image-btn" id="download-converted-image" style="margin-top: 10px;">
+                        <i class="fas fa-download"></i> הורד תמונה
+                    </button>
+                </div>
+            </div>
+
+            <div id="mediaConverter-options" class="option-group">
+                <div class="action-header" data-i18n="actionMediaConverter">ממיר מדיה</div>
+                <label for="mediaInput" data-i18n="mediaLabel">העלה קובץ מדיה:</label>
+                <input type="file" id="mediaInput" accept="video/*,audio/*">
+                <label for="mediaConvertType" data-i18n="mediaConvertTypeLabel">סוג המרה:</label>
+                <select id="mediaConvertType">
+                    <option value="mp4tomp3" data-i18n="mp4tomp3">MP4 ל-MP3 (שמע בלבד)</option>
+                    <option value="mp3towav" data-i18n="mp3towav">MP3 ל-WAV</option>
+                </select>
+                <div id="converted-media-container" style="margin-top: 15px; display: none;">
+                    <audio id="converted-audio" controls style="max-width: 300px;"></audio>
+                    <button class="convert-image-btn" id="download-converted-media" style="margin-top: 10px;">
+                        <i class="fas fa-download"></i> הורד קובץ
+                    </button>
+                </div>
+            </div>
+
+            <button id="process" data-i18n="processButton">
+                <i class="fas fa-play"></i> בצע
+            </button>
+
+            <button class="save-pdf-btn" id="save-pdf" style="margin-top: 15px;">
+                <i class="fas fa-save"></i> שמור טקסט כ-PDF
+            </button>
+
+            <div id="result-container">
+                <div id="result-text" data-i18n="resultText">תוצאה תופיע כאן</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bodyElement = document.body;
+        const languageSelect = document.getElementById('language-select');
+        const resultTextElement = document.getElementById('result-text');
+        const qrCodeContainer = document.getElementById('qr-code-container');
+        const processButton = document.getElementById('process');
+        const qrCodeDiv = document.getElementById('qr-code');
+        const downloadPngBtn = document.getElementById('download-png');
+        const downloadPdfBtn = document.getElementById('download-pdf');
+        const scanQrBtn = document.getElementById('scan-qr');
+        const savePdfBtn = document.getElementById('save-pdf');
+        const themeToggle = document.getElementById('theme-toggle');
+        const imageInput = document.getElementById('imageInput');
+        const convertType = document.getElementById('convertType');
+        const convertedImage = document.getElementById('converted-image');
+        const downloadConvertedImageBtn = document.getElementById('download-converted-image');
+        const convertedImageContainer = document.getElementById('converted-image-container');
+        const mediaInput = document.getElementById('mediaInput');
+        const mediaConvertType = document.getElementById('mediaConvertType');
+        const convertedAudio = document.getElementById('converted-audio');
+        const downloadConvertedMediaBtn = document.getElementById('download-converted-media');
+        const convertedMediaContainer = document.getElementById('converted-media-container');
+        let currentAction = 'select';
+        let scanner;
+        let canvas;
+        let ffmpeg;
+        let mediaBlob;
+
+        // קבוצות האופציות
+        const inputOptionsDiv = document.getElementById('input-options');
+        const findOptionsDiv = document.getElementById('find-options');
+        const calculateOptionsDiv = document.getElementById('calculate-options');
+        const reverseOptionsDiv = document.getElementById('reverse-options');
+        const gematriaOptionsDiv = document.getElementById('gematria-options');
+        const atbashOptionsDiv = document.getElementById('atbash_letters-options');
+        const lengthOptionsDiv = document.getElementById('lengthConvert-options');
+        const wordCountOptionsDiv = document.getElementById('wordCount-options');
+        const qrCodeOptionsDiv = document.getElementById('qrCode-options');
+        const financialCalculatorOptionsDiv = document.getElementById('financialCalculator-options');
+        const bmiOptionsDiv = document.getElementById('bmi-options');
+        const temperatureOptionsDiv = document.getElementById('temperatureConvert-options');
+        const dayOfWeekOptionsDiv = document.getElementById('dayOfWeek-options');
+        const advancedTextEditOptionsDiv = document.getElementById('advancedTextEdit-options');
+        const imageConverterOptionsDiv = document.getElementById('imageConverter-options');
+        const mediaConverterOptionsDiv = document.getElementById('mediaConverter-options');
+
+        const i18n = {
+            he: {
+                title: "כלי רב-תכליתי",
+                selectAction: "בחר פעולה",
+                actionCalculate: "חשבון",
+                actionFind: "חפש מילה",
+                actionReverse: "הפוך סדר טקסט",
+                actionGematria: "גימטריה",
+                actionAtbash: "א\"ת ב\"ש",
+                actionWordCount: "ספירת מילים ואותיות",
+                actionLengthConvert: "המרת אורך",
+                actionQrCode: "יצירת קוד QR",
+                actionFinancialCalculator: "מחשבון פיננסי",
+                actionBMI: "חישוב BMI",
+                actionTemperatureConvert: "המרת טמפרטורה",
+                actionDayOfWeek: "יום בשבוע מתאריך",
+                actionAdvancedTextEdit: "עריכת טקסט מתקדמת",
+                actionImageConverter: "ממיר תמונות",
+                actionMediaConverter: "ממיר מדיה",
+                inputLabel: "הכנס טקסט או ערך:",
+                inputPlaceholder: "הזן טקסט או מספר לפעולה הרצויה",
+                findTextPlaceholder: "הזן את הטקסט שבו תרצה לחפש",
+                findWordLabel: "מילה לחיפוש:",
+                findWordPlaceholder: "הכנס מילה לחיפוש",
+                calcLabel: "הכנס תרגיל חשבוני:",
+                calcPlaceholder: "לדוגמה: 5 + 3 * 2",
+                reverseLabel: "הכנס טקסט להיפוך:",
+                reversePlaceholder: "הכנס טקסט שברצונך להפוך את סדרו",
+                gematriaLabel: "הכנס טקסט בעברית לחישוב גימטריה:",
+                gematriaPlaceholder: "הכנס טקסט בעברית",
+                atbashLabel: "הכנס טקסט בעברית להמרה לא\"ת ב\"ש:",
+                atbashPlaceholder: "הכנס טקסט בעברית להמרה",
+                wordCountLabel: "הכנס טקסט לספירה:",
+                wordCountPlaceholder: "הכנס טקסט לספירה",
+                lengthValueLabel: "הכנס ערך להמרה:",
+                lengthValuePlaceholder: "הכנס מספר",
+                lengthFromLabel: "מ:",
+                lengthToLabel: "ל:",
+                qrCodeLabel: "הכנס טקסט ליצירת קוד QR:",
+                qrCodePlaceholder: "הכנס טקסט ליצירת קוד QR",
+                principalLabel: "סכום הקרן:",
+                principalPlaceholder: "הכנס סכום",
+                interestRateLabel: "שיעור ריבית שנתי (%):",
+                interestRatePlaceholder: "הכנס ריבית",
+                yearsLabel: "מספר שנים:",
+                yearsPlaceholder: "הכנס שנים",
+                weightLabel: "משקל (ק\"ג):",
+                weightPlaceholder: "הכנס משקל",
+                heightLabel: "גובה (ס\"מ):",
+                heightPlaceholder: "הכנס גובה",
+                tempValueLabel: "הכנס ערך להמרה:",
+                tempValuePlaceholder: "הכנס מספר",
+                tempFromLabel: "מ:",
+                tempToLabel: "ל:",
+                dateLabel: "הכנס תאריך (YYYY-MM-DD):",
+                datePlaceholder: "הכנס תאריך",
+                processButton: "בצע",
+                resultText: "תוצאה תופיע כאן",
+                calculateError: "אני מצטער, אני לא יכול לחשב את ��ה.",
+                noTextEntered: "לא הוכנס טקסט.",
+                noWordToFind: "לא הוכנסה מילה לחיפוש.",
+                invalidNumber: "אנא הכנס מספר תקין.",
+                conversionError: "שגיאת המרה.",
+                wordCountResult: "מספר מילים: {0}, מספר אותיות: {1}",
+                qrCode: "קוד QR נוצר בהצלחה",
+                financialResult: "תשלום חודשי: {0}",
+                selectActionFirst: "אנא בחר פעולה תחילה",
+                unitMeters: "מטרים",
+                unitCentimeters: "סנטימטרים",
+                unitKilometers: "קילומטרים",
+                unitInches: "אינצ'ים",
+                unitFeet: "פיט",
+                unitYards: "יארד",
+                unitMiles: "מיילים",
+                wordCountNoText: "לא הוכנס טקסט לספירה.",
+                wordFound: "המילה '{0}' נמצאה {1} פעמים בטקסט.",
+                wordNotFound: "המילה '{0}' לא נמצאה בטקסט.",
+                lengthConversionResult: "המרה מ{0} ל{1}: {2} {0} = {3} {1}.",
+                bmiResult: "ה-BMI שלך הוא: {0} ({1})",
+                temperatureConversionResult: "המרה מ{0} ל{1}: {2}° {0} = {3}° {1}",
+                dayOfWeekResult: "יום השבוע הוא: {0}",
+                bmiUnderweight: "תת משקל",
+                bmiNormal: "משקל תקין",
+                bmiOverweight: "עודף משקל",
+                bmiObese: "השמנה",
+                advancedActionLabel: "בחר פעולה:",
+                cleanText: "ניקוי טקסט",
+                findReplace: "החלפת טקסט",
+                caseConvert: "Case Converter",
+                removeNikud: "מסיר ניקוד",
+                cleanTextLabel: "הכנס טקסט לניקוי:",
+                cleanTextPlaceholder: "הכנס טקסט לניקוי",
+                findReplaceTextLabel: "הכנס טקסט:",
+                findReplaceTextPlaceholder: "הכנס טקסט",
+                replaceWordLabel: "מילה חדשה:",
+                replaceWordPlaceholder: "מילה חדשה",
+                caseConvertLabel: "הכנס טקסט (אנגלית):",
+                caseConvertPlaceholder: "הכנס טקסט באנגלית",
+                caseTypeLabel: "סוג המרה:",
+                uppercase: "אותיות גדולות",
+                lowercase: "אותיות קטנות",
+                removeNikudLabel: "הכנס טקסט עברי עם ניקוד:",
+                removeNikudPlaceholder: "הכנס טקסט עברי",
+                savePdfSuccess: "הטקסט נשמר כ-PDF בהצלחה!",
+                qrScanPrompt: "הצבע את המצלמה לקוד QR לסריקה",
+                qrScanError: "שגיאה בסריקה. וודא שיש הרשאה למצלמה.",
+                imageLabel: "העלה תמונה:",
+                convertTypeLabel: "סוג המרה:",
+                grayscale: "שחור לבן",
+                invert: "הפוך צבעים",
+                sepia: "ספיה",
+                toPng: "המר ל-PNG",
+                toJpeg: "המר ל-JPEG",
+                imageConverted: "התמונה הומרה בהצלחה!",
+                mediaLabel: "העלה קובץ מדיה:",
+                mediaConvertTypeLabel: "סוג המרה:",
+                mp4tomp3: "MP4 ל-MP3 (שמע בלבד)",
+                mp3towav: "MP3 ל-WAV",
+                mediaConverted: "המדיה הומרה בהצלחה!",
+                ffmpegLoading: "טוען FFmpeg..."
+            },
+            en: {
+                title: "Multi-Tool",
+                selectAction: "Select Action",
+                actionCalculate: "Calculate",
+                actionFind: "Find Word",
+                actionReverse: "Reverse Text",
+                actionGematria: "Gematria",
+                actionAtbash: "Atbash Cipher",
+                actionWordCount: "Count Words and Letters",
+                actionLengthConvert: "Length Conversion",
+                actionQrCode: "Generate QR Code",
+                actionFinancialCalculator: "Financial Calculator",
+                actionBMI: "Calculate BMI",
+                actionTemperatureConvert: "Temperature Conversion",
+                actionDayOfWeek: "Day of Week from Date",
+                actionAdvancedTextEdit: "Advanced Text Editing",
+                actionImageConverter: "Image Converter",
+                actionMediaConverter: "Media Converter",
+                inputLabel: "Enter Text or Value:",
+                inputPlaceholder: "Enter text or number for the desired action",
+                findTextPlaceholder: "Enter the text where you want to search",
+                findWordLabel: "Word to Find:",
+                findWordPlaceholder: "Enter word to find",
+                calcLabel: "Enter Arithmetic Expression:",
+                calcPlaceholder: "Example: 5 + 3 * 2",
+                reverseLabel: "Enter Text to Reverse:",
+                reversePlaceholder: "Enter text you want to reverse",
+                gematriaLabel: "Enter Hebrew text to calculate Gematria:",
+                gematriaPlaceholder: "Enter Hebrew text",
+                atbashLabel: "Enter Hebrew text to convert to Atbash:",
+                atbashPlaceholder: "Enter Hebrew text to convert",
+                wordCountLabel: "Enter text to count:",
+                wordCountPlaceholder: "Enter text to count",
+                lengthValueLabel: "Enter value to convert:",
+                lengthValuePlaceholder: "Enter number",
+                lengthFromLabel: "From:",
+                lengthToLabel: "To:",
+                qrCodeLabel: "Enter text to generate QR code:",
+                qrCodePlaceholder: "Enter text to generate QR code",
+                principalLabel: "Principal Amount:",
+                principalPlaceholder: "Enter amount",
+                interestRateLabel: "Annual Interest Rate (%):",
+                interestRatePlaceholder: "Enter interest rate",
+                yearsLabel: "Number of Years:",
+                yearsPlaceholder: "Enter years",
+                weightLabel: "Weight (kg):",
+                weightPlaceholder: "Enter weight",
+                heightLabel: "Height (cm):",
+                heightPlaceholder: "Enter height",
+                tempValueLabel: "Enter value to convert:",
+                tempValuePlaceholder: "Enter number",
+                tempFromLabel: "From:",
+                tempToLabel: "To:",
+                dateLabel: "Enter date (YYYY-MM-DD):",
+                datePlaceholder: "Enter date",
+                processButton: "Process",
+                resultText: "Result will appear here",
+                calculateError: "I'm sorry, I can't calculate that.",
+                noTextEntered: "No text entered.",
+                noWordToFind: "No word to find entered.",
+                invalidNumber: "Please enter a valid number.",
+                conversionError: "Conversion error.",
+                wordCountResult: "Word count: {0}, Letter count: {1}",
+                qrCode: "QR code generated successfully",
+                financialResult: "Monthly payment: {0}",
+                selectActionFirst: "Please select an action first",
+                unitMeters: "Meters",
+                unitCentimeters: "Centimeters",
+                unitKilometers: "Kilometers",
+                unitInches: "Inches",
+                unitFeet: "Feet",
+                unitYards: "Yards",
+                unitMiles: "Miles",
+                wordCountNoText: "No text entered to count.",
+                wordFound: "The word '{0}' was found {1} times in the text.",
+                wordNotFound: "The word '{0}' was not found in the text.",
+                lengthConversionResult: "Conversion from {0} to {1}: {2} {0} = {3} {1}.",
+                bmiResult: "Your BMI is: {0} ({1})",
+                temperatureConversionResult: "Conversion from {0} to {1}: {2}° {0} = {3}�� {1}",
+                dayOfWeekResult: "The day of the week is: {0}",
+                bmiUnderweight: "Underweight",
+                bmiNormal: "Normal weight",
+                bmiOverweight: "Overweight",
+                bmiObese: "Obese",
+                advancedActionLabel: "Choose Action:",
+                cleanText: "Clean Text",
+                findReplace: "Find & Replace",
+                caseConvert: "Case Converter",
+                removeNikud: "Remove Nikud",
+                cleanTextLabel: "Enter text to clean:",
+                cleanTextPlaceholder: "Enter text to clean",
+                findReplaceTextLabel: "Enter text:",
+                findReplaceTextPlaceholder: "Enter text",
+                replaceWordLabel: "New word:",
+                replaceWordPlaceholder: "New word",
+                caseConvertLabel: "Enter text (English):",
+                caseConvertPlaceholder: "Enter English text",
+                caseTypeLabel: "Conversion type:",
+                uppercase: "Uppercase",
+                lowercase: "Lowercase",
+                removeNikudLabel: "Enter Hebrew text with nikud:",
+                removeNikudPlaceholder: "Enter Hebrew text",
+                savePdfSuccess: "Text saved as PDF successfully!",
+                qrScanPrompt: "Point the camera at a QR code to scan",
+                qrScanError: "Scan error. Make sure camera permission is granted.",
+                imageLabel: "Upload image:",
+                convertTypeLabel: "Conversion type:",
+                grayscale: "Grayscale",
+                invert: "Invert colors",
+                sepia: "Sepia",
+                toPng: "Convert to PNG",
+                toJpeg: "Convert to JPEG",
+                imageConverted: "Image converted successfully!",
+                mediaLabel: "Upload media file:",
+                mediaConvertTypeLabel: "Conversion type:",
+                mp4tomp3: "MP4 to MP3 (audio only)",
+                mp3towav: "MP3 to WAV",
+                mediaConverted: "Media converted successfully!",
+                ffmpegLoading: "Loading FFmpeg..."
+            }
+        };
+
+        function updateContent(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.dataset.i18n;
+                if (i18n[lang] && i18n[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = i18n[lang][key];
+                    } else {
+                        element.textContent = i18n[lang][key];
+                    }
+                }
+            });
+
+            // עדכון כיוון הטקסט בהתאם לשפה
+            if (lang === 'he') {
+                bodyElement.setAttribute('dir', 'rtl');
+            } else {
+                bodyElement.setAttribute('dir', 'ltr');
+            }
+        }
+
+        languageSelect.addEventListener('change', (event) => {
+            const selectedLanguage = event.target.value;
+            updateContent(selectedLanguage);
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+        });
+
+        // טעינת שפה שמורה (אם יש)
+        const savedLanguage = localStorage.getItem('selectedLanguage');
+        if (savedLanguage) {
+            languageSelect.value = savedLanguage;
+            updateContent(savedLanguage);
+        } else {
+            // ברירת מחדל לעברית
+            updateContent('he');
+        }
+
+        function showOptions(optionDiv) {
+            hideAllOptions();
+            if (optionDiv) {
+                optionDiv.style.display = 'block';
+            }
+            // נקה את התוצאה כשעוברים קטגוריה
+            resultTextElement.textContent = i18n[languageSelect.value].resultText;
+            qrCodeContainer.style.display = 'none';
+            convertedImageContainer.style.display = 'none';
+            convertedMediaContainer.style.display = 'none';
+        }
+
+        function hideAllOptions() {
+            const options = document.querySelectorAll('.option-group');
+            options.forEach(option => {
+                option.style.display = 'none';
+            });
+            qrCodeContainer.style.display = 'none';
+            convertedImageContainer.style.display = 'none';
+            convertedMediaContainer.style.display = 'none';
+            // הסר active class מכל כפתורים
+            document.querySelectorAll('.sidebar-button').forEach(btn => btn.classList.remove('active'));
+        }
+
+        document.querySelectorAll('.sidebar-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.dataset.action;
+                currentAction = action;
+                showOptions(getOptionDiv(action));
+                button.classList.add('active');
+            });
+        });
+
+        function getOptionDiv(action) {
+            switch (action) {
+                case 'calculate': return calculateOptionsDiv;
+                case 'find': return findOptionsDiv;
+                case 'reverse': return reverseOptionsDiv;
+                case 'gematria': return gematriaOptionsDiv;
+                case 'atbash_letters': return atbashOptionsDiv;
+                case 'wordCount': return wordCountOptionsDiv;
+                case 'lengthConvert': return lengthOptionsDiv;
+                case 'qrCode': return qrCodeOptionsDiv;
+                case 'financialCalculator': return financialCalculatorOptionsDiv;
+                case 'bmi': return bmiOptionsDiv;
+                case 'temperatureConvert': return temperatureOptionsDiv;
+                case 'dayOfWeek': return dayOfWeekOptionsDiv;
+                case 'advancedTextEdit': return advancedTextEditOptionsDiv;
+                case 'imageConverter': return imageConverterOptionsDiv;
+                case 'mediaConverter': return mediaConverterOptionsDiv;
+                default: return inputOptionsDiv;
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.body.removeAttribute('data-theme');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> מצב כהה';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> מצב בהיר';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // טעינת ערכת נושא שמורה
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i> מצב בהיר';
+        } else {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i> מצב כהה';
+        }
+
+        document.getElementById('advancedAction').addEventListener('change', () => {
+            const selected = document.getElementById('advancedAction').value;
+            const subOptions = document.querySelectorAll('#advancedTextEdit-options .option-group');
+            subOptions.forEach(opt => opt.style.display = 'none');
+            document.getElementById(selected + '-options').style.display = 'block';
+        });
+
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        applyConversion();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        convertType.addEventListener('change', applyConversion);
+
+        function applyConversion() {
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const type = convertType.value;
+
+            if (type === 'png' || type === 'jpeg') {
+                const mime = type === 'png' ? 'image/png' : 'image/jpeg';
+                const quality = type === 'jpeg' ? 0.8 : undefined;
+                convertedImage.src = canvas.toDataURL(mime, quality);
+                convertedImageContainer.style.display = 'block';
+                resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
+            } else {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    if (type === 'grayscale') {
+                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                        data[i] = data[i + 1] = data[i + 2] = gray;
+                    } else if (type === 'invert') {
+                        data[i] = 255 - r;
+                        data[i + 1] = 255 - g;
+                        data[i + 2] = 255 - b;
+                    } else if (type === 'sepia') {
+                        data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189);
+                        data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168);
+                        data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131);
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                convertedImage.src = canvas.toDataURL();
+                convertedImageContainer.style.display = 'block';
+                resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
+            }
+        }
+
+        downloadConvertedImageBtn.addEventListener('click', () => {
+            if (canvas) {
+                const type = convertType.value;
+                const mime = type === 'png' || type === 'jpeg' ? (type === 'png' ? 'image/png' : 'image/jpeg') : 'image/png';
+                const link = document.createElement('a');
+                link.download = 'converted_image.' + (type === 'jpeg' ? 'jpg' : 'png');
+                link.href = canvas.toDataURL(mime);
+                link.click();
+            }
+        });
+
+        mediaInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                if (!ffmpeg) {
+                    resultTextElement.textContent = i18n[languageSelect.value].ffmpegLoading;
+                    ffmpeg = new FFmpegWASM.FFmpeg();
+                    await ffmpeg.load();
+                }
+                const type = mediaConvertType.value;
+                const inputName = 'input.' + file.name.split('.').pop();
+                const outputName = 'output.' + (type === 'mp4tomp3' ? 'mp3' : 'wav');
+
+                await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
+
+                if (type === 'mp4tomp3') {
+                    await ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'libmp3lame', '-ab', '128k', outputName]);
+                } else if (type === 'mp3towav') {
+                    await ffmpeg.exec(['-i', inputName, outputName]);
+                }
+
+                const outputData = await ffmpeg.readFile(outputName);
+                mediaBlob = new Blob([outputData], { type: type === 'mp4tomp3' ? 'audio/mpeg' : 'audio/wav' });
+                convertedAudio.src = URL.createObjectURL(mediaBlob);
+                convertedMediaContainer.style.display = 'block';
+                resultTextElement.textContent = i18n[languageSelect.value].mediaConverted;
+            }
+        });
+
+        downloadConvertedMediaBtn.addEventListener('click', () => {
+            if (mediaBlob) {
+                const link = document.createElement('a');
+                const type = mediaConvertType.value;
+                link.download = 'converted_media.' + (type === 'mp4tomp3' ? 'mp3' : 'wav');
+                link.href = URL.createObjectURL(mediaBlob);
+                link.click();
+            }
+        });
+
+        function calculateExpression(expression) {
+            try {
+                // החלפת תווי יוניקוד בתווים רגילים
+                expression = expression.replace(/[\u00a0\u200b\u2003]/g, ' ');
+                return new Function('return ' + expression)();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function reverseText(text) {
+            return text.split('').reverse().join('');
+        }
+
+        function calculateGematria(text) {
+            const gematriaValues = {
+                'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9, 'י': 10,
+                'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90, 'ק': 100,
+                'ר': 200, 'ש': 300, 'ת': 400, 'ך': 500, 'ם': 600, 'ן': 700, 'ף': 800, 'ץ': 900
+            };
+            let total = 0;
+            for (let char of text) {
+                if (gematriaValues[char]) {
+                    total += gematriaValues[char];
+                }
+            }
+            return total;
+        }
+
+        function atbash(text) {
+            const atbashMap = {
+                'א': 'ת', 'ב': 'ש', 'ג': 'ר', 'ד': 'ק', 'ה': 'צ', 'ו': 'פ', 'ז': 'ע', 'ח': 'ס', 'ט': 'נ', 'י': 'מ',
+                'כ': 'ל', 'ל': 'כ', 'מ': 'י', 'נ': 'ט', 'ס': 'ח', 'ע': 'ז', 'פ': 'ו', 'צ': 'ה', 'ק': 'ד', 'ר': 'ג',
+                'ש': 'ב', 'ת': 'א', 'ך': 'ץ', 'ם': 'ף', 'ן': 'ץ', 'ף': 'ם', 'ץ': 'ך'
+            };
+            let result = '';
+            for (let char of text) {
+                result += atbashMap[char] || char;
+            }
+            return result;
+        }
+
+        function countWordsAndLetters(text) {
+            if (!text) return { words: 0, letters: 0 };
+            const words = text.trim().split(/\s+/).filter(word => word !== '').length;
+            const letters = text.replace(/\s/g, '').length;
+            return { words, letters };
+        }
+
+        function convertLength(value, fromUnit, toUnit) {
+            const conversions = {
+                cm: 1,
+                m: 100,
+                km: 100000,
+                inch: 2.54,
+                foot: 30.48,
+                yard: 91.44,
+                mile: 160934.4
+            };
+
+            if (!conversions[fromUnit] || !conversions[toUnit]) {
+                return null; // יחידה לא חוקית
+            }
+
+            return value * (conversions[fromUnit] / conversions[toUnit]);
+        }
+
+        function generateQRCode(text) {
+            qrCodeDiv.innerHTML = ''; // נקה קודם
+            const qrcode = new QRCode(qrCodeDiv, {
+                text: text,
+                width: 200,
+                height: 200
+            });
+            return qrcode;
+        }
+
+        function downloadQRAsPNG() {
+            const canvas = qrCodeDiv.querySelector('canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+
+        function downloadQRAsPDF() {
+            const canvas = qrCodeDiv.querySelector('canvas');
+            if (canvas) {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', 10, 10, 50, 50);
+                pdf.save('qrcode.pdf');
+            }
+        }
+
+        function scanQRCode() {
+            if (scanner) {
+                scanner.stop();
+            }
+            scanner = new Instascan.Scanner({ video: document.getElementById('qr-video') });
+            scanner.addListener('scan', function (content) {
+                document.getElementById('mainInputQrCode').value = content;
+                scanner.stop();
+                alert(i18n[languageSelect.value].qrCode);
+            });
+            Instascan.Camera.getCameras().then(function (cameras) {
+                if (cameras.length > 0) {
+                    scanner.start(cameras[0]);
+                    alert(i18n[languageSelect.value].qrScanPrompt);
+                } else {
+                    alert(i18n[languageSelect.value].qrScanError);
+                }
+            }).catch(function (e) {
+                alert(i18n[languageSelect.value].qrScanError);
+            });
+        }
+
+        function saveTextAsPDF(text) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.setFontSize(12);
+            const lines = pdf.splitTextToSize(text, 180);
+            pdf.text(lines, 10, 10);
+            pdf.save('text.pdf');
+            alert(i18n[languageSelect.value].savePdfSuccess);
+        }
+
+        function calculateFinancial(principal, interestRate, years) {
+            const monthlyInterestRate = interestRate / 100 / 12;
+            const numberOfPayments = years * 12;
+
+            const monthlyPayment = (principal * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
+                (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+
+            return monthlyPayment;
+        }
+
+        function findWordInText(text, word) {
+            if (!text || !word) return { found: false, count: 0 };
+            const regex = new RegExp(word, 'g');
+            const matches = text.match(regex);
+            const count = matches ? matches.length : 0;
+            return { found: count > 0, count: count };
+        }
+
+        function highlightWords(text, word) {
+            if (!text || !word) return text;
+            const regex = new RegExp(word, 'gi');
+            return text.replace(regex, match => `<span class="highlight">${match}</span>`);
+        }
+
+        function calculateBMI(weight, height) {
+            if (weight <= 0 || height <= 0) return null;
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            let category;
+            if (bmi < 18.5) category = i18n[languageSelect.value].bmiUnderweight;
+            else if (bmi < 25) category = i18n[languageSelect.value].bmiNormal;
+            else if (bmi < 30) category = i18n[languageSelect.value].bmiOverweight;
+            else category = i18n[languageSelect.value].bmiObese;
+            return { bmi: bmi.toFixed(1), category };
+        }
+
+        function convertTemperature(value, fromUnit, toUnit) {
+            if (fromUnit === toUnit) return value;
+            let celsius;
+            switch (fromUnit) {
+                case 'celsius': celsius = value; break;
+                case 'fahrenheit': celsius = (value - 32) * 5/9; break;
+                case 'kelvin': celsius = value - 273.15; break;
+            }
+            switch (toUnit) {
+                case 'celsius': return celsius;
+                case 'fahrenheit': return celsius * 9/5 + 32;
+                case 'kelvin': return celsius + 273.15;
+            }
+        }
+
+        function getDayOfWeek(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return null;
+            const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+            const daysEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return languageSelect.value === 'he' ? days[date.getDay()] : daysEn[date.getDay()];
+        }
+
+        function cleanText(text) {
+            return text
+                .replace(/\s+/g, ' ') // הסר רווחים כפולים
+                .replace(/^\s+|\s+$/g, '') // הסר רווחים בתחילת/סוף
+                .replace(/\n\s*\n/g, '\n') // הסר שורות ריקות כפולות
+                .replace(/[^\w\s\u0590-\u05FF]/g, ''); // הסר תווים מיוחדים (שמור עברית)
+        }
+
+        function findReplace(text, find, replace) {
+            return text.replace(new RegExp(find, 'g'), replace);
+        }
+
+        function caseConvert(text, type) {
+            if (type === 'uppercase') return text.toUpperCase();
+            if (type === 'lowercase') return text.toLowerCase();
+            return text;
+        }
+
+        function removeNikud(text) {
+            // הסר סימני ניקוד עברי (טווח Unicode)
+            return text.replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '');
+        }
+
+        downloadPngBtn.addEventListener('click', downloadQRAsPNG);
+        downloadPdfBtn.addEventListener('click', downloadQRAsPDF);
+        scanQrBtn.addEventListener('click', scanQRCode);
+        savePdfBtn.addEventListener('click', () => {
+            const text = resultTextElement.textContent;
+            if (text && text !== i18n[languageSelect.value].resultText) {
+                saveTextAsPDF(text);
+            } else {
+                alert(i18n[languageSelect.value].noTextEntered);
+            }
+        });
+
+        processButton.addEventListener('click', () => {
+            const selectedAction = currentAction;
+            let result;
+            let inputText;
+
+            switch (selectedAction) {
+                case 'calculate':
+                    inputText = document.getElementById('mainInputCalc').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    result = calculateExpression(inputText);
+                    if (result === null) {
+                        resultTextElement.textContent = i18n[languageSelect.value].calculateError;
+                    } else {
+                        resultTextElement.textContent = result;
+                    }
+                    break;
+
+                case 'find':
+                    const textToSearch = document.getElementById('mainInputFind').value;
+                    const wordToSearch = document.getElementById('wordToSearch').value;
+                    if (!textToSearch) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    if (!wordToSearch) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noWordToFind;
+                        return;
+                    }
+                    const findResult = findWordInText(textToSearch, wordToSearch);
+                    if (findResult.found) {
+                        resultTextElement.innerHTML = i18n[languageSelect.value].wordFound.replace('{0}', wordToSearch).replace('{1}', findResult.count);
+                        resultTextElement.innerHTML = highlightWords(resultTextElement.innerHTML, wordToSearch);
+                    } else {
+                        resultTextElement.textContent = i18n[languageSelect.value].wordNotFound.replace('{0}', wordToSearch);
+                    }
+                    break;
+
+                case 'reverse':
+                    inputText = document.getElementById('mainInputReverse').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+
