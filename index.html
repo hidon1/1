@@ -1708,4 +1708,183 @@
                     inputText = document.getElementById('mainInputReverse').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    resultTextElement.textContent = reverseText(inputText);
+                    break;
 
+                case 'gematria':
+                    inputText = document.getElementById('mainInputGematria').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    resultTextElement.textContent = calculateGematria(inputText);
+                    break;
+
+                case 'atbash_letters':
+                    inputText = document.getElementById('mainInputAtbash').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    resultTextElement.textContent = atbash(inputText);
+                    break;
+
+                case 'wordCount':
+                    inputText = document.getElementById('mainInputWordCount').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].wordCountNoText;
+                        return;
+                    }
+                    const { words, letters } = countWordsAndLetters(inputText);
+                    resultTextElement.textContent = i18n[languageSelect.value].wordCountResult.replace('{0}', words).replace('{1}', letters);
+                    break;
+
+                case 'lengthConvert':
+                    const lengthValue = parseFloat(document.getElementById('mainInputLength').value);
+                    const fromUnit = document.getElementById('length_from').value;
+                    const toUnit = document.getElementById('length_to').value;
+                    if (isNaN(lengthValue)) {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        return;
+                    }
+                    result = convertLength(lengthValue, fromUnit, toUnit);
+                    if (result !== null) {
+                        resultTextElement.textContent = i18n[languageSelect.value].lengthConversionResult
+                            .replace('{0}', i18n[languageSelect.value]['unit' + fromUnit.charAt(0).toUpperCase() + fromUnit.slice(1)])
+                            .replace('{1}', i18n[languageSelect.value]['unit' + toUnit.charAt(0).toUpperCase() + toUnit.slice(1)])
+                            .replace('{2}', lengthValue)
+                            .replace('{3}', result.toFixed(2));
+                    } else {
+                        resultTextElement.textContent = i18n[languageSelect.value].conversionError;
+                    }
+                    break;
+
+                case 'qrCode':
+                    inputText = document.getElementById('mainInputQrCode').value;
+                    if (!inputText) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    generateQRCode(inputText);
+                    qrCodeContainer.style.display = 'flex';
+                    resultTextElement.textContent = i18n[languageSelect.value].qrCode;
+                    break;
+
+                case 'financialCalculator':
+                    const principal = parseFloat(document.getElementById('principal').value);
+                    const interestRate = parseFloat(document.getElementById('interestRate').value);
+                    const years = parseInt(document.getElementById('years').value);
+                    if (isNaN(principal) || isNaN(interestRate) || isNaN(years)) {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        return;
+                    }
+                    result = calculateFinancial(principal, interestRate, years);
+                    resultTextElement.textContent = i18n[languageSelect.value].financialResult.replace('{0}', result.toFixed(2));
+                    break;
+
+                case 'bmi':
+                    const weight = parseFloat(document.getElementById('weight').value);
+                    const height = parseFloat(document.getElementById('height').value);
+                    if (isNaN(weight) || isNaN(height)) {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        return;
+                    }
+                    const bmiResult = calculateBMI(weight, height);
+                    if (bmiResult) {
+                        resultTextElement.textContent = i18n[languageSelect.value].bmiResult.replace('{0}', bmiResult.bmi).replace('{1}', bmiResult.category);
+                    } else {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                    }
+                    break;
+
+                case 'temperatureConvert':
+                    const tempValue = parseFloat(document.getElementById('mainInputTemp').value);
+                    const tempFrom = document.getElementById('temp_from').value;
+                    const tempTo = document.getElementById('temp_to').value;
+                    if (isNaN(tempValue)) {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        return;
+                    }
+                    result = convertTemperature(tempValue, tempFrom, tempTo);
+                    resultTextElement.textContent = i18n[languageSelect.value].temperatureConversionResult
+                        .replace('{0}', tempFrom)
+                        .replace('{1}', tempTo)
+                        .replace('{2}', tempValue)
+                        .replace('{3}', result.toFixed(2));
+                    break;
+
+                case 'dayOfWeek':
+                    const dateInput = document.getElementById('dateInput').value;
+                    if (!dateInput) {
+                        resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        return;
+                    }
+                    const day = getDayOfWeek(dateInput);
+                    if (day) {
+                        resultTextElement.textContent = i18n[languageSelect.value].dayOfWeekResult.replace('{0}', day);
+                    } else {
+                        resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                    }
+                    break;
+
+                case 'advancedTextEdit':
+                    const advancedAction = document.getElementById('advancedAction').value;
+                    switch (advancedAction) {
+                        case 'cleanText':
+                            inputText = document.getElementById('cleanTextInput').value;
+                            if (!inputText) {
+                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                                return;
+                            }
+                            resultTextElement.textContent = cleanText(inputText);
+                            break;
+                        case 'findReplace':
+                            const text = document.getElementById('findReplaceInput').value;
+                            const find = document.getElementById('findWord').value;
+                            const replace = document.getElementById('replaceWord').value;
+                            if (!text) {
+                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                                return;
+                            }
+                            resultTextElement.textContent = findReplace(text, find, replace);
+                            break;
+                        case 'caseConvert':
+                            inputText = document.getElementById('caseConvertInput').value;
+                            const caseType = document.getElementById('caseType').value;
+                            if (!inputText) {
+                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                                return;
+                            }
+                            resultTextElement.textContent = caseConvert(inputText, caseType);
+                            break;
+                        case 'removeNikud':
+                            inputText = document.getElementById('removeNikudInput').value;
+                            if (!inputText) {
+                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                                return;
+                            }
+                            resultTextElement.textContent = removeNikud(inputText);
+                            break;
+                        default:
+                            resultTextElement.textContent = i18n[languageSelect.value].selectActionFirst;
+                    }
+                    break;
+
+                case 'imageConverter':
+                    // התמונה כבר מעובדת ב-applyConversion
+                    break;
+
+                case 'mediaConverter':
+                    // המדיה כבר מעובדת ב-mediaInput
+                    break;
+
+                default:
+                    resultTextElement.textContent = i18n[languageSelect.value].selectActionFirst;
+            }
+        });
+    </script>
+</body>
+
+</html>
