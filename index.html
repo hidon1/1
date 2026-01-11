@@ -708,7 +708,7 @@
         }
 
         /* טעינת פונטים */
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -895,9 +895,6 @@
                         <button class="download-btn" id="download-pdf">
                             <i class="fas fa-file-pdf"></i> הורד כ-PDF
                         </button>
-                        <button class="scan-btn" id="scan-qr">
-                            <i class="fas fa-camera"></i> סרוק QR
-                        </button>
                     </div>
                 </div>
             </div>
@@ -984,7 +981,6 @@
         const qrCodeDiv = document.getElementById('qr-code');
         const downloadPngBtn = document.getElementById('download-png');
         const downloadPdfBtn = document.getElementById('download-pdf');
-        const scanQrBtn = document.getElementById('scan-qr');
         const themeToggle = document.getElementById('theme-toggle');
         const imageInput = document.getElementById('imageInput');
         const convertType = document.getElementById('convertType');
@@ -1508,12 +1504,6 @@
             }
         }
 
-        function scanQRCode() {
-            // עדכון: פונקציונליות סריקת QR נשמרת לעתיד
-            // ניתן להשתמש ב-HTML5 File API לטעינת תמונת QR ולפענוח שלה
-            alert('פונקציה זו תתווסף בעתיד. אנא השתמש ביצירת קוד QR.');
-        }
-
         function calculateFinancial(principal, interestRate, years) {
             const monthlyInterestRate = interestRate / 100 / 12;
             const numberOfPayments = years * 12;
@@ -1575,7 +1565,6 @@
 
         downloadPngBtn.addEventListener('click', downloadQRAsPNG);
         downloadPdfBtn.addEventListener('click', downloadQRAsPDF);
-        scanQrBtn.addEventListener('click', scanQRCode);
 
         processButton.addEventListener('click', () => {
             const selectedAction = currentAction;
