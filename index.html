@@ -584,7 +584,7 @@
             flex-wrap: wrap;
         }
 
-        .download-btn, .scan-btn, .save-pdf-btn, .convert-image-btn {
+        .download-btn, .scan-btn, .save-pdf-btn, .convert-image-btn, .download-result-btn {
             padding: 8px 12px;
             background: var(--accent-color);
             color: white;
@@ -599,7 +599,7 @@
             font-size: 14px;
         }
 
-        .download-btn:hover, .scan-btn:hover, .save-pdf-btn:hover, .convert-image-btn:hover {
+        .download-btn:hover, .scan-btn:hover, .save-pdf-btn:hover, .convert-image-btn:hover, .download-result-btn:hover {
             background: #ff5252;
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
@@ -704,6 +704,48 @@
             .container {
                 width: 95%;
                 padding: 25px 20px;
+            }
+
+            /* תיקון בעיות קלט במובייל */
+            textarea,
+            input[type="text"],
+            input[type="file"],
+            select {
+                font-size: 16px; /* מונע זום אוטומטי ב-iOS */
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+
+            /* מניעת ריצוד ואנימציות מיותרות במובייל */
+            .container::after {
+                animation: none;
+            }
+
+            body::before {
+                animation: none;
+                opacity: 0.5;
+            }
+
+            h2 {
+                animation: none;
+            }
+
+            .sidebar {
+                animation: none;
+            }
+
+            /* שיפור נראות שדות קלט */
+            input[type="text"],
+            textarea {
+                background: rgba(255, 255, 255, 0.95);
+                border: 2px solid rgba(102, 126, 234, 0.3);
+            }
+
+            [data-theme="dark"] input[type="text"],
+            [data-theme="dark"] textarea {
+                background: rgba(45, 55, 72, 0.95);
+                border: 2px solid rgba(102, 126, 234, 0.5);
             }
         }
 
@@ -968,6 +1010,9 @@
 
             <div id="result-container">
                 <div id="result-text" data-i18n="resultText">תוצאה תופיע כאן</div>
+                <button class="download-result-btn" id="download-result-btn" style="display: none; margin-top: 10px; width: 100%;">
+                    <i class="fas fa-download"></i> <span data-i18n="downloadResult">הורד תוצאה כקובץ</span>
+                </button>
             </div>
         </div>
     </div>
@@ -990,9 +1035,11 @@
         const hamburgerBtn = document.getElementById('hamburger-btn');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const downloadResultBtn = document.getElementById('download-result-btn');
         let currentAction = 'select';
         let scanner;
         let canvas;
+        let lastResult = '';
 
         // קבוצות האופציות
         const inputOptionsDiv = document.getElementById('input-options');
@@ -1125,7 +1172,8 @@
                 sepia: "ספיה",
                 toPng: "המר ל-PNG",
                 toJpeg: "המר ל-JPEG",
-                imageConverted: "התמונה הומרה בהצלחה!"
+                imageConverted: "התמונה הומרה בהצלחה!",
+                downloadResult: "הורד תוצאה כקובץ"
             },
             en: {
                 title: "Multi-Tool",
@@ -1220,7 +1268,8 @@
                 sepia: "Sepia",
                 toPng: "Convert to PNG",
                 toJpeg: "Convert to JPEG",
-                imageConverted: "Image converted successfully!"
+                imageConverted: "Image converted successfully!",
+                downloadResult: "Download result as file"
             }
         };
 
@@ -1269,6 +1318,8 @@
             resultTextElement.textContent = i18n[languageSelect.value].resultText;
             qrCodeContainer.style.display = 'none';
             convertedImageContainer.style.display = 'none';
+            downloadResultBtn.style.display = 'none';
+            lastResult = '';
         }
 
         function hideAllOptions() {
@@ -1404,6 +1455,58 @@
                 link.href = canvas.toDataURL(mime);
                 link.click();
             }
+        });
+
+        // הורדת תוצאה כקובץ טקסט
+        downloadResultBtn.addEventListener('click', () => {
+            if (!lastResult) return;
+            
+            const blob = new Blob([lastResult], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            
+            // שם קובץ מותאם לפעולה
+            let filename = 'result.txt';
+            switch(currentAction) {
+                case 'calculate':
+                    filename = 'calculation_result.txt';
+                    break;
+                case 'gematria':
+                    filename = 'gematria_result.txt';
+                    break;
+                case 'atbash_letters':
+                    filename = 'atbash_result.txt';
+                    break;
+                case 'reverse':
+                    filename = 'reversed_text.txt';
+                    break;
+                case 'wordCount':
+                    filename = 'word_count_result.txt';
+                    break;
+                case 'lengthConvert':
+                    filename = 'length_conversion.txt';
+                    break;
+                case 'temperatureConvert':
+                    filename = 'temperature_conversion.txt';
+                    break;
+                case 'financialCalculator':
+                    filename = 'financial_calculation.txt';
+                    break;
+                case 'bmi':
+                    filename = 'bmi_result.txt';
+                    break;
+                case 'dayOfWeek':
+                    filename = 'day_of_week.txt';
+                    break;
+                default:
+                    filename = 'result.txt';
+            }
+            
+            link.download = filename;
+            link.click();
+            setTimeout(() => {
+                URL.revokeObjectURL(link.href);
+            }, 100);
         });
 
         function calculateExpression(expression) {
@@ -1576,13 +1679,17 @@
                     inputText = document.getElementById('mainInputCalc').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     result = calculateExpression(inputText);
                     if (result === null) {
                         resultTextElement.textContent = i18n[languageSelect.value].calculateError;
+                        downloadResultBtn.style.display = 'none';
                     } else {
+                        lastResult = inputText + ' = ' + result;
                         resultTextElement.textContent = result;
+                        downloadResultBtn.style.display = 'flex';
                     }
                     break;
 
@@ -1591,18 +1698,24 @@
                     const wordToSearch = document.getElementById('wordToSearch').value;
                     if (!textToSearch) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     if (!wordToSearch) {
                         resultTextElement.textContent = i18n[languageSelect.value].noWordToFind;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     const findResult = findWordInText(textToSearch, wordToSearch);
                     if (findResult.found) {
-                        resultTextElement.innerHTML = i18n[languageSelect.value].wordFound.replace('{0}', wordToSearch).replace('{1}', findResult.count);
+                        lastResult = i18n[languageSelect.value].wordFound.replace('{0}', wordToSearch).replace('{1}', findResult.count);
+                        resultTextElement.innerHTML = lastResult;
                         resultTextElement.innerHTML = highlightWords(resultTextElement.innerHTML, wordToSearch);
+                        downloadResultBtn.style.display = 'flex';
                     } else {
-                        resultTextElement.textContent = i18n[languageSelect.value].wordNotFound.replace('{0}', wordToSearch);
+                        lastResult = i18n[languageSelect.value].wordNotFound.replace('{0}', wordToSearch);
+                        resultTextElement.textContent = lastResult;
+                        downloadResultBtn.style.display = 'flex';
                     }
                     break;
 
@@ -1610,37 +1723,49 @@
                     inputText = document.getElementById('mainInputReverse').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
-                    resultTextElement.textContent = reverseText(inputText);
+                    lastResult = reverseText(inputText);
+                    resultTextElement.textContent = lastResult;
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'gematria':
                     inputText = document.getElementById('mainInputGematria').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
+                    lastResult = inputText + ' = ' + calculateGematria(inputText);
                     resultTextElement.textContent = calculateGematria(inputText);
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'atbash_letters':
                     inputText = document.getElementById('mainInputAtbash').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
-                    resultTextElement.textContent = atbash(inputText);
+                    lastResult = atbash(inputText);
+                    resultTextElement.textContent = lastResult;
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'wordCount':
                     inputText = document.getElementById('mainInputWordCount').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].wordCountNoText;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     const { words, letters } = countWordsAndLetters(inputText);
-                    resultTextElement.textContent = i18n[languageSelect.value].wordCountResult.replace('{0}', words).replace('{1}', letters);
+                    lastResult = i18n[languageSelect.value].wordCountResult.replace('{0}', words).replace('{1}', letters);
+                    resultTextElement.textContent = lastResult;
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'lengthConvert':
@@ -1649,17 +1774,21 @@
                     const toUnit = document.getElementById('length_to').value;
                     if (isNaN(lengthValue)) {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     result = convertLength(lengthValue, fromUnit, toUnit);
                     if (result !== null) {
-                        resultTextElement.textContent = i18n[languageSelect.value].lengthConversionResult
+                        lastResult = i18n[languageSelect.value].lengthConversionResult
                             .replace('{0}', i18n[languageSelect.value]['unit' + fromUnit.charAt(0).toUpperCase() + fromUnit.slice(1)])
                             .replace('{1}', i18n[languageSelect.value]['unit' + toUnit.charAt(0).toUpperCase() + toUnit.slice(1)])
                             .replace('{2}', lengthValue)
                             .replace('{3}', result.toFixed(2));
+                        resultTextElement.textContent = lastResult;
+                        downloadResultBtn.style.display = 'flex';
                     } else {
                         resultTextElement.textContent = i18n[languageSelect.value].conversionError;
+                        downloadResultBtn.style.display = 'none';
                     }
                     break;
 
@@ -1667,11 +1796,13 @@
                     inputText = document.getElementById('mainInputQrCode').value;
                     if (!inputText) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     generateQRCode(inputText);
                     qrCodeContainer.style.display = 'flex';
                     resultTextElement.textContent = i18n[languageSelect.value].qrCode;
+                    downloadResultBtn.style.display = 'none'; // QR has its own download buttons
                     break;
 
                 case 'financialCalculator':
@@ -1680,10 +1811,13 @@
                     const years = parseInt(document.getElementById('years').value);
                     if (isNaN(principal) || isNaN(interestRate) || isNaN(years)) {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     result = calculateFinancial(principal, interestRate, years);
-                    resultTextElement.textContent = i18n[languageSelect.value].financialResult.replace('{0}', result.toFixed(2));
+                    lastResult = i18n[languageSelect.value].financialResult.replace('{0}', result.toFixed(2));
+                    resultTextElement.textContent = lastResult;
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'bmi':
@@ -1691,13 +1825,17 @@
                     const height = parseFloat(document.getElementById('height').value);
                     if (isNaN(weight) || isNaN(height)) {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     const bmiResult = calculateBMI(weight, height);
                     if (bmiResult) {
-                        resultTextElement.textContent = i18n[languageSelect.value].bmiResult.replace('{0}', bmiResult.bmi).replace('{1}', bmiResult.category);
+                        lastResult = i18n[languageSelect.value].bmiResult.replace('{0}', bmiResult.bmi).replace('{1}', bmiResult.category);
+                        resultTextElement.textContent = lastResult;
+                        downloadResultBtn.style.display = 'flex';
                     } else {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                     }
                     break;
 
@@ -1707,36 +1845,45 @@
                     const tempTo = document.getElementById('temp_to').value;
                     if (isNaN(tempValue)) {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     result = convertTemperature(tempValue, tempFrom, tempTo);
-                    resultTextElement.textContent = i18n[languageSelect.value].temperatureConversionResult
+                    lastResult = i18n[languageSelect.value].temperatureConversionResult
                         .replace('{0}', tempFrom)
                         .replace('{1}', tempTo)
                         .replace('{2}', tempValue)
                         .replace('{3}', result.toFixed(2));
+                    resultTextElement.textContent = lastResult;
+                    downloadResultBtn.style.display = 'flex';
                     break;
 
                 case 'dayOfWeek':
                     const dateInput = document.getElementById('dateInput').value;
                     if (!dateInput) {
                         resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                        downloadResultBtn.style.display = 'none';
                         return;
                     }
                     const day = getDayOfWeek(dateInput);
                     if (day) {
-                        resultTextElement.textContent = i18n[languageSelect.value].dayOfWeekResult.replace('{0}', day);
+                        lastResult = i18n[languageSelect.value].dayOfWeekResult.replace('{0}', day);
+                        resultTextElement.textContent = lastResult;
+                        downloadResultBtn.style.display = 'flex';
                     } else {
                         resultTextElement.textContent = i18n[languageSelect.value].invalidNumber;
+                        downloadResultBtn.style.display = 'none';
                     }
                     break;
 
                 case 'imageConverter':
                     // התמונה כבר מעובדת ב-applyConversion
+                    downloadResultBtn.style.display = 'none'; // Image has its own download button
                     break;
 
                 default:
                     resultTextElement.textContent = i18n[languageSelect.value].selectActionFirst;
+                    downloadResultBtn.style.display = 'none';
             }
         });
     </script>
