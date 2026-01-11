@@ -45,13 +45,13 @@
         }
 
         body {
-            font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Heebo', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             direction: rtl;
             background: var(--light-bg);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            align-items: stretch;
+            flex-direction: column;
             min-height: 100vh;
             color: var(--text-color);
             line-height: 1.6;
@@ -80,22 +80,81 @@
 
         .sidebar {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 300px;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             gap: 8px;
             background: var(--sidebar-bg);
             backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            padding: 15px;
+            border-left: 1px solid var(--glass-border);
+            padding: 20px 15px;
             box-shadow: var(--shadow);
             z-index: 100;
             animation: slideInRight 0.8s ease-out;
-            max-height: calc(100vh - 40px);
             overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 101;
+            background: var(--button-bg);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: var(--transition);
+        }
+
+        .hamburger-btn i {
+            color: white;
+            font-size: 20px;
+        }
+
+        .hamburger-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .category-group {
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            letter-spacing: 0.5px;
         }
 
         @keyframes slideInRight {
@@ -194,10 +253,12 @@
 
         .main-content {
             flex: 1;
-            margin-right: 340px;
+            margin-right: 280px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 40px 20px;
+            transition: var(--transition);
         }
 
         .container {
@@ -317,7 +378,7 @@
             margin-bottom: 15px;
             transition: var(--transition);
             outline: none;
-            font-family: 'Rubik', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Heebo', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -581,25 +642,49 @@
 
         /* מדיה קוורי לתצוגות קטנות */
         @media (max-width: 768px) {
+            .hamburger-btn {
+                display: block;
+            }
+
             .sidebar {
-                position: static;
+                transform: translateX(100%);
+                width: 75%;
+                max-width: 320px;
+                border-radius: 15px 0 0 15px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
                 width: 100%;
-                margin-bottom: 15px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                max-height: none;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 99;
+                backdrop-filter: blur(3px);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
             }
 
             .main-content {
                 margin-right: 0;
+                padding: 80px 15px 20px 15px;
             }
 
             .sidebar-button {
-                flex: 1 1 180px;
-                margin: 3px;
-                font-size: 11px;
-                padding: 8px;
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+
+            .category-title {
+                font-size: 0.75em;
             }
 
             #qr-code {
@@ -615,21 +700,33 @@
             h2 {
                 font-size: 1.8em;
             }
+
+            .container {
+                width: 95%;
+                padding: 25px 20px;
+            }
         }
 
-        /* טעינת פונט רוביק */
-        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap');
+        /* טעינת פונטים */
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
     </style>
 
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/instascan@1.4.3/dist/instascan.min.js"></script>
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js"></script>
-    <script src="https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js"></script>
 </head>
 
 <body data-lang="he" dir="rtl">
-    <div class="sidebar">
+    <button class="hamburger-btn" id="hamburger-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>כלים</h3>
+        </div>
+        
         <div id="language-select-container">
             <label for="language-select">שפה:</label>
             <select id="language-select">
@@ -637,51 +734,66 @@
                 <option value="en">English</option>
             </select>
         </div>
-        <button class="sidebar-button" data-action="calculate" data-i18n="actionCalculate">
-            <i class="fas fa-calculator"></i> חשבון
-        </button>
-        <button class="sidebar-button" data-action="find" data-i18n="actionFind">
-            <i class="fas fa-search"></i> חפש מילה
-        </button>
-        <button class="sidebar-button" data-action="reverse" data-i18n="actionReverse">
-            <i class="fas fa-undo"></i> הפוך סדר טקסט
-        </button>
-        <button class="sidebar-button" data-action="gematria" data-i18n="actionGematria">
-            <i class="fas fa-star-of-david"></i> גימטריה
-        </button>
-        <button class="sidebar-button" data-action="atbash_letters" data-i18n="actionAtbash">
-            <i class="fas fa-exchange-alt"></i> א"ת ב"ש
-        </button>
-        <button class="sidebar-button" data-action="wordCount" data-i18n="actionWordCount">
-            <i class="fas fa-count"></i> ספירת מילים ואותיות
-        </button>
-        <button class="sidebar-button" data-action="lengthConvert" data-i18n="actionLengthConvert">
-            <i class="fas fa-balance-scale"></i> המרת אורך
-        </button>
-        <button class="sidebar-button" data-action="qrCode" data-i18n="actionQrCode">
-            <i class="fas fa-qrcode"></i> יצירת קוד QR
-        </button>
-        <button class="sidebar-button" data-action="financialCalculator" data-i18n="actionFinancialCalculator">
-            <i class="fas fa-dollar-sign"></i> מחשבון פיננסי
-        </button>
-        <button class="sidebar-button" data-action="bmi" data-i18n="actionBMI">
-            <i class="fas fa-weight"></i> חישוב BMI
-        </button>
-        <button class="sidebar-button" data-action="temperatureConvert" data-i18n="actionTemperatureConvert">
-            <i class="fas fa-thermometer-half"></i> המרת טמפרטורה
-        </button>
-        <button class="sidebar-button" data-action="dayOfWeek" data-i18n="actionDayOfWeek">
-            <i class="fas fa-calendar-day"></i> יום בשבוע מתאריך
-        </button>
-        <button class="sidebar-button" data-action="advancedTextEdit" data-i18n="actionAdvancedTextEdit">
-            <i class="fas fa-edit"></i> עריכת טקסט מתקדמת
-        </button>
-        <button class="sidebar-button" data-action="imageConverter" data-i18n="actionImageConverter">
-            <i class="fas fa-images"></i> ממיר תמונות
-        </button>
-        <button class="sidebar-button" data-action="mediaConverter" data-i18n="actionMediaConverter">
-            <i class="fas fa-file-video"></i> ממיר מדיה
-        </button>
+
+        <!-- קטגוריה: חישובים -->
+        <div class="category-group">
+            <div class="category-title" data-i18n="categoryCalculations">חישובים</div>
+            <button class="sidebar-button" data-action="calculate" data-i18n="actionCalculate">
+                <i class="fas fa-calculator"></i> חשבון
+            </button>
+            <button class="sidebar-button" data-action="financialCalculator" data-i18n="actionFinancialCalculator">
+                <i class="fas fa-dollar-sign"></i> מחשבון פיננסי
+            </button>
+            <button class="sidebar-button" data-action="bmi" data-i18n="actionBMI">
+                <i class="fas fa-weight"></i> חישוב BMI
+            </button>
+            <button class="sidebar-button" data-action="gematria" data-i18n="actionGematria">
+                <i class="fas fa-star-of-david"></i> גימטריה
+            </button>
+        </div>
+
+        <!-- קטגוריה: כלי טקסט -->
+        <div class="category-group">
+            <div class="category-title" data-i18n="categoryText">כלי טקסט</div>
+            <button class="sidebar-button" data-action="find" data-i18n="actionFind">
+                <i class="fas fa-search"></i> חפש מילה
+            </button>
+            <button class="sidebar-button" data-action="reverse" data-i18n="actionReverse">
+                <i class="fas fa-undo"></i> הפוך סדר טקסט
+            </button>
+            <button class="sidebar-button" data-action="atbash_letters" data-i18n="actionAtbash">
+                <i class="fas fa-exchange-alt"></i> א"ת ב"ש
+            </button>
+            <button class="sidebar-button" data-action="wordCount" data-i18n="actionWordCount">
+                <i class="fas fa-list-ol"></i> ספירת מילים ואותיות
+            </button>
+        </div>
+
+        <!-- קטגוריה: ממירים -->
+        <div class="category-group">
+            <div class="category-title" data-i18n="categoryConverters">ממירים</div>
+            <button class="sidebar-button" data-action="lengthConvert" data-i18n="actionLengthConvert">
+                <i class="fas fa-ruler"></i> המרת אורך
+            </button>
+            <button class="sidebar-button" data-action="temperatureConvert" data-i18n="actionTemperatureConvert">
+                <i class="fas fa-thermometer-half"></i> המרת טמפרטורה
+            </button>
+            <button class="sidebar-button" data-action="imageConverter" data-i18n="actionImageConverter">
+                <i class="fas fa-images"></i> ממיר תמונות
+            </button>
+        </div>
+
+        <!-- קטגוריה: מדיה וכלים -->
+        <div class="category-group">
+            <div class="category-title" data-i18n="categoryMedia">מדיה וכלים</div>
+            <button class="sidebar-button" data-action="qrCode" data-i18n="actionQrCode">
+                <i class="fas fa-qrcode"></i> יצירת קוד QR
+            </button>
+            <button class="sidebar-button" data-action="dayOfWeek" data-i18n="actionDayOfWeek">
+                <i class="fas fa-calendar-day"></i> יום בשבוע מתאריך
+            </button>
+        </div>
+
         <button class="theme-toggle" id="theme-toggle">
             <i class="fas fa-moon"></i> מצב כהה
         </button>
@@ -833,42 +945,6 @@
                 <input type="text" id="dateInput" data-i18n-placeholder="datePlaceholder" placeholder="הכנס תאריך">
             </div>
 
-            <div id="advancedTextEdit-options" class="option-group">
-                <div class="action-header" data-i18n="actionAdvancedTextEdit">עריכת טקסט מתקדמת</div>
-                <label for="advancedAction" data-i18n="advancedActionLabel">בחר פעולה:</label>
-                <select id="advancedAction">
-                    <option value="cleanText" data-i18n="cleanText">ניקוי טקסט</option>
-                    <option value="findReplace" data-i18n="findReplace">החלפת טקסט</option>
-                    <option value="caseConvert" data-i18n="caseConvert">Case Converter</option>
-                    <option value="removeNikud" data-i18n="removeNikud">מסיר ניקוד</option>
-                </select>
-                <div id="cleanText-options" class="option-group">
-                    <label for="cleanTextInput" data-i18n="cleanTextLabel">הכנס טקסט לניקוי:</label>
-                    <textarea id="cleanTextInput" data-i18n-placeholder="cleanTextPlaceholder" placeholder="הכנס טקסט לניקוי"></textarea>
-                </div>
-                <div id="findReplace-options" class="option-group">
-                    <label for="findReplaceInput" data-i18n="findReplaceTextLabel">הכנס טקסט:</label>
-                    <textarea id="findReplaceInput" data-i18n-placeholder="findReplaceTextPlaceholder" placeholder="הכנס טקסט"></textarea>
-                    <label for="findWord" data-i18n="findWordLabel">מילה להחלפה:</label>
-                    <input type="text" id="findWord" data-i18n-placeholder="findWordPlaceholder" placeholder="מילה להחלפה">
-                    <label for="replaceWord" data-i18n="replaceWordLabel">מילה חדשה:</label>
-                    <input type="text" id="replaceWord" data-i18n-placeholder="replaceWordPlaceholder" placeholder="מילה חדשה">
-                </div>
-                <div id="caseConvert-options" class="option-group">
-                    <label for="caseConvertInput" data-i18n="caseConvertLabel">הכנס טקסט (אנגלית):</label>
-                    <textarea id="caseConvertInput" data-i18n-placeholder="caseConvertPlaceholder" placeholder="הכנס טקסט באנגלית"></textarea>
-                    <label for="caseType" data-i18n="caseTypeLabel">סוג המרה:</label>
-                    <select id="caseType">
-                        <option value="uppercase" data-i18n="uppercase">אותיות גדולות</option>
-                        <option value="lowercase" data-i18n="lowercase">אותיות קטנות</option>
-                    </select>
-                </div>
-                <div id="removeNikud-options" class="option-group">
-                    <label for="removeNikudInput" data-i18n="removeNikudLabel">הכנס טקסט עברי עם ניקוד:</label>
-                    <textarea id="removeNikudInput" data-i18n-placeholder="removeNikudPlaceholder" placeholder="הכנס טקסט עברי"></textarea>
-                </div>
-            </div>
-
             <div id="imageConverter-options" class="option-group">
                 <div class="action-header" data-i18n="actionImageConverter">ממיר תמונות</div>
                 <label for="imageInput" data-i18n="imageLabel">העלה תמונה:</label>
@@ -889,29 +965,8 @@
                 </div>
             </div>
 
-            <div id="mediaConverter-options" class="option-group">
-                <div class="action-header" data-i18n="actionMediaConverter">ממיר מדיה</div>
-                <label for="mediaInput" data-i18n="mediaLabel">העלה קובץ מדיה:</label>
-                <input type="file" id="mediaInput" accept="video/*,audio/*">
-                <label for="mediaConvertType" data-i18n="mediaConvertTypeLabel">סוג המרה:</label>
-                <select id="mediaConvertType">
-                    <option value="mp4tomp3" data-i18n="mp4tomp3">MP4 ל-MP3 (שמע בלבד)</option>
-                    <option value="mp3towav" data-i18n="mp3towav">MP3 ל-WAV</option>
-                </select>
-                <div id="converted-media-container" style="margin-top: 15px; display: none;">
-                    <audio id="converted-audio" controls style="max-width: 300px;"></audio>
-                    <button class="convert-image-btn" id="download-converted-media" style="margin-top: 10px;">
-                        <i class="fas fa-download"></i> הורד קובץ
-                    </button>
-                </div>
-            </div>
-
             <button id="process" data-i18n="processButton">
                 <i class="fas fa-play"></i> בצע
-            </button>
-
-            <button class="save-pdf-btn" id="save-pdf" style="margin-top: 15px;">
-                <i class="fas fa-save"></i> שמור טקסט כ-PDF
             </button>
 
             <div id="result-container">
@@ -930,23 +985,18 @@
         const downloadPngBtn = document.getElementById('download-png');
         const downloadPdfBtn = document.getElementById('download-pdf');
         const scanQrBtn = document.getElementById('scan-qr');
-        const savePdfBtn = document.getElementById('save-pdf');
         const themeToggle = document.getElementById('theme-toggle');
         const imageInput = document.getElementById('imageInput');
         const convertType = document.getElementById('convertType');
         const convertedImage = document.getElementById('converted-image');
         const downloadConvertedImageBtn = document.getElementById('download-converted-image');
         const convertedImageContainer = document.getElementById('converted-image-container');
-        const mediaInput = document.getElementById('mediaInput');
-        const mediaConvertType = document.getElementById('mediaConvertType');
-        const convertedAudio = document.getElementById('converted-audio');
-        const downloadConvertedMediaBtn = document.getElementById('download-converted-media');
-        const convertedMediaContainer = document.getElementById('converted-media-container');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
         let currentAction = 'select';
         let scanner;
         let canvas;
-        let ffmpeg;
-        let mediaBlob;
 
         // קבוצות האופציות
         const inputOptionsDiv = document.getElementById('input-options');
@@ -962,14 +1012,37 @@
         const bmiOptionsDiv = document.getElementById('bmi-options');
         const temperatureOptionsDiv = document.getElementById('temperatureConvert-options');
         const dayOfWeekOptionsDiv = document.getElementById('dayOfWeek-options');
-        const advancedTextEditOptionsDiv = document.getElementById('advancedTextEdit-options');
         const imageConverterOptionsDiv = document.getElementById('imageConverter-options');
-        const mediaConverterOptionsDiv = document.getElementById('mediaConverter-options');
+
+        // פונקציונליות תפריט המבורגר
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // סגירת תפריט בלחיצה על כפתור בצד הנייד
+        document.querySelectorAll('.sidebar-button').forEach(button => {
+            button.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
 
         const i18n = {
             he: {
                 title: "כלי רב-תכליתי",
                 selectAction: "בחר פעולה",
+                categoryCalculations: "חישובים",
+                categoryText: "כלי טקסט",
+                categoryConverters: "ממירים",
+                categoryMedia: "מדיה וכלים",
                 actionCalculate: "חשבון",
                 actionFind: "חפש מילה",
                 actionReverse: "הפוך סדר טקסט",
@@ -982,9 +1055,7 @@
                 actionBMI: "חישוב BMI",
                 actionTemperatureConvert: "המרת טמפרטורה",
                 actionDayOfWeek: "יום בשבוע מתאריך",
-                actionAdvancedTextEdit: "עריכת טקסט מתקדמת",
                 actionImageConverter: "ממיר תמונות",
-                actionMediaConverter: "ממיר מדיה",
                 inputLabel: "הכנס טקסט או ערך:",
                 inputPlaceholder: "הזן טקסט או מספר לפעולה הרצויה",
                 findTextPlaceholder: "הזן את הטקסט שבו תרצה לחפש",
@@ -1051,27 +1122,6 @@
                 bmiNormal: "משקל תקין",
                 bmiOverweight: "עודף משקל",
                 bmiObese: "השמנה",
-                advancedActionLabel: "בחר פעולה:",
-                cleanText: "ניקוי טקסט",
-                findReplace: "החלפת טקסט",
-                caseConvert: "Case Converter",
-                removeNikud: "מסיר ניקוד",
-                cleanTextLabel: "הכנס טקסט לניקוי:",
-                cleanTextPlaceholder: "הכנס טקסט לניקוי",
-                findReplaceTextLabel: "הכנס טקסט:",
-                findReplaceTextPlaceholder: "הכנס טקסט",
-                replaceWordLabel: "מילה חדשה:",
-                replaceWordPlaceholder: "מילה חדשה",
-                caseConvertLabel: "הכנס טקסט (אנגלית):",
-                caseConvertPlaceholder: "הכנס טקסט באנגלית",
-                caseTypeLabel: "סוג המרה:",
-                uppercase: "אותיות גדולות",
-                lowercase: "אותיות קטנות",
-                removeNikudLabel: "הכנס טקסט עברי עם ניקוד:",
-                removeNikudPlaceholder: "הכנס טקסט עברי",
-                savePdfSuccess: "הטקסט נשמר כ-PDF בהצלחה!",
-                qrScanPrompt: "הצבע את המצלמה לקוד QR לסריקה",
-                qrScanError: "שגיאה בסריקה. וודא שיש הרשאה למצלמה.",
                 imageLabel: "העלה תמונה:",
                 convertTypeLabel: "סוג המרה:",
                 grayscale: "שחור לבן",
@@ -1079,17 +1129,15 @@
                 sepia: "ספיה",
                 toPng: "המר ל-PNG",
                 toJpeg: "המר ל-JPEG",
-                imageConverted: "התמונה הומרה בהצלחה!",
-                mediaLabel: "העלה קובץ מדיה:",
-                mediaConvertTypeLabel: "סוג המרה:",
-                mp4tomp3: "MP4 ל-MP3 (שמע בלבד)",
-                mp3towav: "MP3 ל-WAV",
-                mediaConverted: "המדיה הומרה בהצלחה!",
-                ffmpegLoading: "טוען FFmpeg..."
+                imageConverted: "התמונה הומרה בהצלחה!"
             },
             en: {
                 title: "Multi-Tool",
                 selectAction: "Select Action",
+                categoryCalculations: "Calculations",
+                categoryText: "Text Tools",
+                categoryConverters: "Converters",
+                categoryMedia: "Media & Tools",
                 actionCalculate: "Calculate",
                 actionFind: "Find Word",
                 actionReverse: "Reverse Text",
@@ -1102,9 +1150,7 @@
                 actionBMI: "Calculate BMI",
                 actionTemperatureConvert: "Temperature Conversion",
                 actionDayOfWeek: "Day of Week from Date",
-                actionAdvancedTextEdit: "Advanced Text Editing",
                 actionImageConverter: "Image Converter",
-                actionMediaConverter: "Media Converter",
                 inputLabel: "Enter Text or Value:",
                 inputPlaceholder: "Enter text or number for the desired action",
                 findTextPlaceholder: "Enter the text where you want to search",
@@ -1171,27 +1217,6 @@
                 bmiNormal: "Normal weight",
                 bmiOverweight: "Overweight",
                 bmiObese: "Obese",
-                advancedActionLabel: "Choose Action:",
-                cleanText: "Clean Text",
-                findReplace: "Find & Replace",
-                caseConvert: "Case Converter",
-                removeNikud: "Remove Nikud",
-                cleanTextLabel: "Enter text to clean:",
-                cleanTextPlaceholder: "Enter text to clean",
-                findReplaceTextLabel: "Enter text:",
-                findReplaceTextPlaceholder: "Enter text",
-                replaceWordLabel: "New word:",
-                replaceWordPlaceholder: "New word",
-                caseConvertLabel: "Enter text (English):",
-                caseConvertPlaceholder: "Enter English text",
-                caseTypeLabel: "Conversion type:",
-                uppercase: "Uppercase",
-                lowercase: "Lowercase",
-                removeNikudLabel: "Enter Hebrew text with nikud:",
-                removeNikudPlaceholder: "Enter Hebrew text",
-                savePdfSuccess: "Text saved as PDF successfully!",
-                qrScanPrompt: "Point the camera at a QR code to scan",
-                qrScanError: "Scan error. Make sure camera permission is granted.",
                 imageLabel: "Upload image:",
                 convertTypeLabel: "Conversion type:",
                 grayscale: "Grayscale",
@@ -1199,13 +1224,7 @@
                 sepia: "Sepia",
                 toPng: "Convert to PNG",
                 toJpeg: "Convert to JPEG",
-                imageConverted: "Image converted successfully!",
-                mediaLabel: "Upload media file:",
-                mediaConvertTypeLabel: "Conversion type:",
-                mp4tomp3: "MP4 to MP3 (audio only)",
-                mp3towav: "MP3 to WAV",
-                mediaConverted: "Media converted successfully!",
-                ffmpegLoading: "Loading FFmpeg..."
+                imageConverted: "Image converted successfully!"
             }
         };
 
@@ -1254,7 +1273,6 @@
             resultTextElement.textContent = i18n[languageSelect.value].resultText;
             qrCodeContainer.style.display = 'none';
             convertedImageContainer.style.display = 'none';
-            convertedMediaContainer.style.display = 'none';
         }
 
         function hideAllOptions() {
@@ -1264,7 +1282,6 @@
             });
             qrCodeContainer.style.display = 'none';
             convertedImageContainer.style.display = 'none';
-            convertedMediaContainer.style.display = 'none';
             // הסר active class מכל כפתורים
             document.querySelectorAll('.sidebar-button').forEach(btn => btn.classList.remove('active'));
         }
@@ -1292,9 +1309,7 @@
                 case 'bmi': return bmiOptionsDiv;
                 case 'temperatureConvert': return temperatureOptionsDiv;
                 case 'dayOfWeek': return dayOfWeekOptionsDiv;
-                case 'advancedTextEdit': return advancedTextEditOptionsDiv;
                 case 'imageConverter': return imageConverterOptionsDiv;
-                case 'mediaConverter': return mediaConverterOptionsDiv;
                 default: return inputOptionsDiv;
             }
         }
@@ -1320,13 +1335,6 @@
         } else {
             themeToggle.innerHTML = '<i class="fas fa-moon"></i> מצב כהה';
         }
-
-        document.getElementById('advancedAction').addEventListener('change', () => {
-            const selected = document.getElementById('advancedAction').value;
-            const subOptions = document.querySelectorAll('#advancedTextEdit-options .option-group');
-            subOptions.forEach(opt => opt.style.display = 'none');
-            document.getElementById(selected + '-options').style.display = 'block';
-        });
 
         imageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
@@ -1398,44 +1406,6 @@
                 const link = document.createElement('a');
                 link.download = 'converted_image.' + (type === 'jpeg' ? 'jpg' : 'png');
                 link.href = canvas.toDataURL(mime);
-                link.click();
-            }
-        });
-
-        mediaInput.addEventListener('change', async (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                if (!ffmpeg) {
-                    resultTextElement.textContent = i18n[languageSelect.value].ffmpegLoading;
-                    ffmpeg = new FFmpegWASM.FFmpeg();
-                    await ffmpeg.load();
-                }
-                const type = mediaConvertType.value;
-                const inputName = 'input.' + file.name.split('.').pop();
-                const outputName = 'output.' + (type === 'mp4tomp3' ? 'mp3' : 'wav');
-
-                await ffmpeg.writeFile(inputName, new Uint8Array(await file.arrayBuffer()));
-
-                if (type === 'mp4tomp3') {
-                    await ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'libmp3lame', '-ab', '128k', outputName]);
-                } else if (type === 'mp3towav') {
-                    await ffmpeg.exec(['-i', inputName, outputName]);
-                }
-
-                const outputData = await ffmpeg.readFile(outputName);
-                mediaBlob = new Blob([outputData], { type: type === 'mp4tomp3' ? 'audio/mpeg' : 'audio/wav' });
-                convertedAudio.src = URL.createObjectURL(mediaBlob);
-                convertedMediaContainer.style.display = 'block';
-                resultTextElement.textContent = i18n[languageSelect.value].mediaConverted;
-            }
-        });
-
-        downloadConvertedMediaBtn.addEventListener('click', () => {
-            if (mediaBlob) {
-                const link = document.createElement('a');
-                const type = mediaConvertType.value;
-                link.download = 'converted_media.' + (type === 'mp4tomp3' ? 'mp3' : 'wav');
-                link.href = URL.createObjectURL(mediaBlob);
                 link.click();
             }
         });
@@ -1539,35 +1509,9 @@
         }
 
         function scanQRCode() {
-            if (scanner) {
-                scanner.stop();
-            }
-            scanner = new Instascan.Scanner({ video: document.getElementById('qr-video') });
-            scanner.addListener('scan', function (content) {
-                document.getElementById('mainInputQrCode').value = content;
-                scanner.stop();
-                alert(i18n[languageSelect.value].qrCode);
-            });
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    scanner.start(cameras[0]);
-                    alert(i18n[languageSelect.value].qrScanPrompt);
-                } else {
-                    alert(i18n[languageSelect.value].qrScanError);
-                }
-            }).catch(function (e) {
-                alert(i18n[languageSelect.value].qrScanError);
-            });
-        }
-
-        function saveTextAsPDF(text) {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            pdf.setFontSize(12);
-            const lines = pdf.splitTextToSize(text, 180);
-            pdf.text(lines, 10, 10);
-            pdf.save('text.pdf');
-            alert(i18n[languageSelect.value].savePdfSuccess);
+            // עדכון: פונקציונליות סריקת QR נשמרת לעתיד
+            // ניתן להשתמש ב-HTML5 File API לטעינת תמונת QR ולפענוח שלה
+            alert('פונקציה זו תתווסף בעתיד. אנא השתמש ביצירת קוד QR.');
         }
 
         function calculateFinancial(principal, interestRate, years) {
@@ -1629,40 +1573,9 @@
             return languageSelect.value === 'he' ? days[date.getDay()] : daysEn[date.getDay()];
         }
 
-        function cleanText(text) {
-            return text
-                .replace(/\s+/g, ' ') // הסר רווחים כפולים
-                .replace(/^\s+|\s+$/g, '') // הסר רווחים בתחילת/סוף
-                .replace(/\n\s*\n/g, '\n') // הסר שורות ריקות כפולות
-                .replace(/[^\w\s\u0590-\u05FF]/g, ''); // הסר תווים מיוחדים (שמור עברית)
-        }
-
-        function findReplace(text, find, replace) {
-            return text.replace(new RegExp(find, 'g'), replace);
-        }
-
-        function caseConvert(text, type) {
-            if (type === 'uppercase') return text.toUpperCase();
-            if (type === 'lowercase') return text.toLowerCase();
-            return text;
-        }
-
-        function removeNikud(text) {
-            // הסר סימני ניקוד עברי (טווח Unicode)
-            return text.replace(/[\u0591-\u05BD\u05BF\u05C1\u05C2\u05C4\u05C5\u05C7]/g, '');
-        }
-
         downloadPngBtn.addEventListener('click', downloadQRAsPNG);
         downloadPdfBtn.addEventListener('click', downloadQRAsPDF);
         scanQrBtn.addEventListener('click', scanQRCode);
-        savePdfBtn.addEventListener('click', () => {
-            const text = resultTextElement.textContent;
-            if (text && text !== i18n[languageSelect.value].resultText) {
-                saveTextAsPDF(text);
-            } else {
-                alert(i18n[languageSelect.value].noTextEntered);
-            }
-        });
 
         processButton.addEventListener('click', () => {
             const selectedAction = currentAction;
@@ -1829,55 +1742,8 @@
                     }
                     break;
 
-                case 'advancedTextEdit':
-                    const advancedAction = document.getElementById('advancedAction').value;
-                    switch (advancedAction) {
-                        case 'cleanText':
-                            inputText = document.getElementById('cleanTextInput').value;
-                            if (!inputText) {
-                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
-                                return;
-                            }
-                            resultTextElement.textContent = cleanText(inputText);
-                            break;
-                        case 'findReplace':
-                            const text = document.getElementById('findReplaceInput').value;
-                            const find = document.getElementById('findWord').value;
-                            const replace = document.getElementById('replaceWord').value;
-                            if (!text) {
-                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
-                                return;
-                            }
-                            resultTextElement.textContent = findReplace(text, find, replace);
-                            break;
-                        case 'caseConvert':
-                            inputText = document.getElementById('caseConvertInput').value;
-                            const caseType = document.getElementById('caseType').value;
-                            if (!inputText) {
-                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
-                                return;
-                            }
-                            resultTextElement.textContent = caseConvert(inputText, caseType);
-                            break;
-                        case 'removeNikud':
-                            inputText = document.getElementById('removeNikudInput').value;
-                            if (!inputText) {
-                                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
-                                return;
-                            }
-                            resultTextElement.textContent = removeNikud(inputText);
-                            break;
-                        default:
-                            resultTextElement.textContent = i18n[languageSelect.value].selectActionFirst;
-                    }
-                    break;
-
                 case 'imageConverter':
                     // התמונה כבר מעובדת ב-applyConversion
-                    break;
-
-                case 'mediaConverter':
-                    // המדיה כבר מעובדת ב-mediaInput
                     break;
 
                 default:
