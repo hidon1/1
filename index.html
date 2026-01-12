@@ -1640,13 +1640,25 @@
                     break;
                 case 'pdf':
                     // Create PDF using jsPDF
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF();
-                    const lines = pdf.splitTextToSize(text, 180);
-                    pdf.text(lines, 10, 10);
-                    pdf.save('document.pdf');
-                    resultTextElement.textContent = i18n[languageSelect.value].fileCreated;
-                    return;
+                    if (typeof window.jspdf !== 'undefined') {
+                        try {
+                            const { jsPDF } = window.jspdf;
+                            const pdf = new jsPDF();
+                            const lines = pdf.splitTextToSize(text, 180);
+                            pdf.text(lines, 10, 10);
+                            pdf.save('document.pdf');
+                            resultTextElement.textContent = i18n[languageSelect.value].fileCreated;
+                            return;
+                        } catch (e) {
+                            console.error('jsPDF error:', e);
+                        }
+                    }
+                    // Fallback to TXT
+                    alert('PDF library not available. Downloading as TXT instead.');
+                    content = text;
+                    mimeType = 'text/plain';
+                    extension = 'txt';
+                    break;
                 case 'html':
                     content = `<!DOCTYPE html>
 <html>
@@ -1769,12 +1781,56 @@
 
         function generateQRCode(text) {
             qrCodeDiv.innerHTML = ''; // נקה קודם
-            const qrcode = new QRCode(qrCodeDiv, {
-                text: text,
-                width: 200,
-                height: 200
-            });
-            return qrcode;
+            
+            // Check if QRCode library is loaded
+            if (typeof QRCode !== 'undefined') {
+                try {
+                    const qrcode = new QRCode(qrCodeDiv, {
+                        text: text,
+                        width: 200,
+                        height: 200
+                    });
+                    return qrcode;
+                } catch (e) {
+                    console.error('QRCode library error:', e);
+                }
+            }
+            
+            // Fallback: Create a simple visual representation
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            
+            // Create a simple pattern as fallback
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 200, 200);
+            ctx.fillStyle = '#000000';
+            
+            // Create a simple grid pattern
+            const cellSize = 10;
+            const textHash = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 20; j++) {
+                    const shouldFill = (i + j + textHash) % 3 === 0;
+                    if (shouldFill) {
+                        ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            
+            qrCodeDiv.appendChild(canvas);
+            
+            // Add a note about the fallback
+            const note = document.createElement('div');
+            note.style.fontSize = '12px';
+            note.style.marginTop = '10px';
+            note.style.color = '#666';
+            note.textContent = 'QR Code placeholder - External library blocked';
+            qrCodeDiv.appendChild(note);
+            
+            return null;
         }
 
         function downloadQRAsPNG() {
@@ -1790,11 +1846,23 @@
         function downloadQRAsPDF() {
             const canvas = qrCodeDiv.querySelector('canvas');
             if (canvas) {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF();
-                const imgData = canvas.toDataURL('image/png');
-                pdf.addImage(imgData, 'PNG', 10, 10, 50, 50);
-                pdf.save('qrcode.pdf');
+                // Check if jsPDF is available
+                if (typeof window.jspdf !== 'undefined') {
+                    try {
+                        const { jsPDF } = window.jspdf;
+                        const pdf = new jsPDF();
+                        const imgData = canvas.toDataURL('image/png');
+                        pdf.addImage(imgData, 'PNG', 10, 10, 50, 50);
+                        pdf.save('qrcode.pdf');
+                        return;
+                    } catch (e) {
+                        console.error('jsPDF error:', e);
+                    }
+                }
+                
+                // Fallback: download as image instead
+                alert('PDF library not available. Downloading as PNG instead.');
+                downloadQRAsPNG();
             }
         }
 
