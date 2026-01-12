@@ -1662,7 +1662,7 @@
             const text = document.getElementById('mainInputTextConverter').value;
             const fileType = document.getElementById('textFileType').value;
             
-            if (!text) {
+            if (!text || !text.trim()) {
                 resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
                 return;
             }
