@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <title>כלי רב-תכליתי: חשבון, חיפוש, א"ת ב"ש, גימטריה, ספירה, המרה ועוד</title>
@@ -816,8 +816,7 @@
             .sidebar-button,
             .container,
             button {
-                transform: translateZ(0);
-                -webkit-transform: translateZ(0);
+                will-change: transform;
             }
 
             /* מניעת בעיות גלילה */
@@ -1565,7 +1564,7 @@
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
                     }, mime);
                 } catch (e) {
                     // Fallback
@@ -1634,7 +1633,7 @@
                 document.body.removeChild(link);
                 setTimeout(() => {
                     URL.revokeObjectURL(url);
-                }, 100);
+                }, 1000);
             } catch (e) {
                 console.error('Error downloading result:', e);
                 // Fallback method for older browsers
@@ -1748,7 +1747,7 @@
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                        setTimeout(() => URL.revokeObjectURL(url), 100);
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
                     }, 'image/png');
                 } catch (e) {
                     // Fallback for any errors
@@ -1773,7 +1772,7 @@
                     pdf.save('qrcode.pdf');
                 } catch (e) {
                     console.error('Error generating PDF:', e);
-                    alert('שגיאה ביצירת PDF. נסה להוריד כ-PNG במקום.');
+                    resultTextElement.textContent = 'שגיאה ביצירת PDF. נסה להוריד כ-PNG במקום.';
                 }
             }
         }
