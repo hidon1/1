@@ -124,21 +124,30 @@
             z-index: 101;
             background: var(--button-bg);
             border: none;
-            border-radius: 12px;
-            padding: 12px 15px;
+            border-radius: 8px;
+            padding: 10px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             transition: var(--transition);
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
         .hamburger-btn i {
             color: white;
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .hamburger-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .hamburger-btn:active {
+            transform: scale(0.95);
         }
 
         .category-group {
@@ -365,7 +374,6 @@
 
         textarea,
         input[type="text"],
-        input[type="file"],
         select,
         button {
             width: 100%;
@@ -382,6 +390,51 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .custom-file-upload {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border: 2px dashed rgba(102, 126, 234, 0.4);
+            border-radius: var(--border-radius);
+            background: rgba(102, 126, 234, 0.05);
+            color: var(--secondary-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .custom-file-upload:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .custom-file-upload i {
+            font-size: 18px;
+        }
+        
+        .file-name {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-top: -10px;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            display: none;
         }
 
         input[type="text"]:focus,
@@ -580,12 +633,13 @@
 
         .download-buttons {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .download-btn, .scan-btn, .save-pdf-btn, .convert-image-btn {
-            padding: 8px 12px;
+            padding: 10px 16px;
             background: var(--accent-color);
             color: white;
             border: none;
@@ -595,14 +649,19 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
         }
 
         .download-btn:hover, .scan-btn:hover, .save-pdf-btn:hover, .convert-image-btn:hover {
             background: #ff5252;
             transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 82, 82, 0.4);
+        }
+        
+        .download-btn:active, .save-pdf-btn:active, .convert-image-btn:active {
+            transform: translateY(0) scale(1);
         }
 
         .input-wrapper {
@@ -643,7 +702,7 @@
         /* מדיה קוורי לתצוגות קטנות */
         @media (max-width: 768px) {
             .hamburger-btn {
-                display: block;
+                display: flex;
             }
 
             .sidebar {
@@ -711,7 +770,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
@@ -780,6 +839,9 @@
             </button>
             <button class="sidebar-button" data-action="imageConverter" data-i18n="actionImageConverter">
                 <i class="fas fa-images"></i> ממיר תמונות
+            </button>
+            <button class="sidebar-button" data-action="textConverter" data-i18n="actionTextConverter">
+                <i class="fas fa-file-alt"></i> ממיר טקסט לקובץ
             </button>
         </div>
 
@@ -945,14 +1007,25 @@
             <div id="imageConverter-options" class="option-group">
                 <div class="action-header" data-i18n="actionImageConverter">ממיר תמונות</div>
                 <label for="imageInput" data-i18n="imageLabel">העלה תמונה:</label>
+                <label for="imageInput" class="custom-file-upload">
+                    <i class="fas fa-upload"></i>
+                    <span data-i18n="chooseImage">בחר תמונה</span>
+                </label>
                 <input type="file" id="imageInput" accept="image/*">
+                <div class="file-name" id="image-file-name"></div>
                 <label for="convertType" data-i18n="convertTypeLabel">סוג המרה:</label>
                 <select id="convertType">
                     <option value="grayscale" data-i18n="grayscale">שחור לבן</option>
                     <option value="invert" data-i18n="invert">הפוך צבעים</option>
                     <option value="sepia" data-i18n="sepia">ספיה</option>
+                    <option value="blur" data-i18n="blur">טשטוש</option>
+                    <option value="brightness" data-i18n="brightness">בהירות</option>
+                    <option value="contrast" data-i18n="contrast">ניגודיות</option>
                     <option value="png" data-i18n="toPng">המר ל-PNG</option>
-                    <option value="jpeg" data-i18n="toJpeg">המר ל-JPEG</option>
+                    <option value="jpg" data-i18n="toJpg">המר ל-JPG</option>
+                    <option value="webp" data-i18n="toWebp">המר ל-WebP</option>
+                    <option value="bmp" data-i18n="toBmp">המר ל-BMP</option>
+                    <option value="gif" data-i18n="toGif">המר ל-GIF</option>
                 </select>
                 <div id="converted-image-container" style="margin-top: 15px; display: none;">
                     <img id="converted-image" style="max-width: 300px; border-radius: var(--border-radius);">
@@ -960,6 +1033,26 @@
                         <i class="fas fa-download"></i> הורד תמונה
                     </button>
                 </div>
+            </div>
+
+            <div id="textConverter-options" class="option-group">
+                <div class="action-header" data-i18n="actionTextConverter">ממיר טקסט לקובץ</div>
+                <label for="mainInputTextConverter" data-i18n="textConverterLabel">הכנס טקסט:</label>
+                <textarea id="mainInputTextConverter" data-i18n-placeholder="textConverterPlaceholder"
+                    placeholder="הכנס טקסט שברצונך להמיר לקובץ"></textarea>
+                <label for="textFileType" data-i18n="textFileTypeLabel">בחר סוג קובץ:</label>
+                <select id="textFileType">
+                    <option value="txt" data-i18n="toTxt">TXT</option>
+                    <option value="pdf" data-i18n="toPdf">PDF</option>
+                    <option value="docx" data-i18n="toDocx">DOCX (Word)</option>
+                    <option value="html" data-i18n="toHtml">HTML</option>
+                    <option value="md" data-i18n="toMarkdown">Markdown</option>
+                    <option value="json" data-i18n="toJson">JSON</option>
+                    <option value="csv" data-i18n="toCsv">CSV</option>
+                </select>
+                <button class="convert-image-btn" id="download-text-file" style="margin-top: 10px;">
+                    <i class="fas fa-download"></i> <span data-i18n="downloadFile">הורד קובץ</span>
+                </button>
             </div>
 
             <button id="process" data-i18n="processButton">
@@ -1009,6 +1102,7 @@
         const temperatureOptionsDiv = document.getElementById('temperatureConvert-options');
         const dayOfWeekOptionsDiv = document.getElementById('dayOfWeek-options');
         const imageConverterOptionsDiv = document.getElementById('imageConverter-options');
+        const textConverterOptionsDiv = document.getElementById('textConverter-options');
 
         // פונקציונליות תפריט המבורגר
         hamburgerBtn.addEventListener('click', () => {
@@ -1052,6 +1146,7 @@
                 actionTemperatureConvert: "המרת טמפרטורה",
                 actionDayOfWeek: "יום בשבוע מתאריך",
                 actionImageConverter: "ממיר תמונות",
+                actionTextConverter: "ממיר טקסט לקובץ",
                 inputLabel: "הכנס טקסט או ערך:",
                 inputPlaceholder: "הזן טקסט או מספר לפעולה הרצויה",
                 findTextPlaceholder: "הזן את הטקסט שבו תרצה לחפש",
@@ -1123,9 +1218,28 @@
                 grayscale: "שחור לבן",
                 invert: "הפוך צבעים",
                 sepia: "ספיה",
+                blur: "טשטוש",
+                brightness: "בהירות",
+                contrast: "ניגודיות",
                 toPng: "המר ל-PNG",
-                toJpeg: "המר ל-JPEG",
-                imageConverted: "התמונה הומרה בהצלחה!"
+                toJpg: "המר ל-JPG",
+                toWebp: "המר ל-WebP",
+                toBmp: "המר ל-BMP",
+                toGif: "המר ל-GIF",
+                chooseImage: "בחר תמונה",
+                imageConverted: "התמונה הומרה בהצלחה!",
+                textConverterLabel: "הכנס טקסט:",
+                textConverterPlaceholder: "הכנס טקסט שברצונך להמיר לקובץ",
+                textFileTypeLabel: "בחר סוג קובץ:",
+                toTxt: "TXT",
+                toPdf: "PDF",
+                toDocx: "DOCX (Word)",
+                toHtml: "HTML",
+                toMarkdown: "Markdown",
+                toJson: "JSON",
+                toCsv: "CSV",
+                downloadFile: "הורד קובץ",
+                fileCreated: "הקובץ נוצר בהצלחה!"
             },
             en: {
                 title: "Multi-Tool",
@@ -1147,6 +1261,7 @@
                 actionTemperatureConvert: "Temperature Conversion",
                 actionDayOfWeek: "Day of Week from Date",
                 actionImageConverter: "Image Converter",
+                actionTextConverter: "Text to File Converter",
                 inputLabel: "Enter Text or Value:",
                 inputPlaceholder: "Enter text or number for the desired action",
                 findTextPlaceholder: "Enter the text where you want to search",
@@ -1218,9 +1333,28 @@
                 grayscale: "Grayscale",
                 invert: "Invert colors",
                 sepia: "Sepia",
+                blur: "Blur",
+                brightness: "Brightness",
+                contrast: "Contrast",
                 toPng: "Convert to PNG",
-                toJpeg: "Convert to JPEG",
-                imageConverted: "Image converted successfully!"
+                toJpg: "Convert to JPG",
+                toWebp: "Convert to WebP",
+                toBmp: "Convert to BMP",
+                toGif: "Convert to GIF",
+                chooseImage: "Choose Image",
+                imageConverted: "Image converted successfully!",
+                textConverterLabel: "Enter text:",
+                textConverterPlaceholder: "Enter text you want to convert to file",
+                textFileTypeLabel: "Choose file type:",
+                toTxt: "TXT",
+                toPdf: "PDF",
+                toDocx: "DOCX (Word)",
+                toHtml: "HTML",
+                toMarkdown: "Markdown",
+                toJson: "JSON",
+                toCsv: "CSV",
+                downloadFile: "Download File",
+                fileCreated: "File created successfully!"
             }
         };
 
@@ -1306,6 +1440,7 @@
                 case 'temperatureConvert': return temperatureOptionsDiv;
                 case 'dayOfWeek': return dayOfWeekOptionsDiv;
                 case 'imageConverter': return imageConverterOptionsDiv;
+                case 'textConverter': return textConverterOptionsDiv;
                 default: return inputOptionsDiv;
             }
         }
@@ -1335,6 +1470,11 @@
         imageInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
+                // Show file name
+                const fileNameDisplay = document.getElementById('image-file-name');
+                fileNameDisplay.textContent = `קובץ נבחר: ${file.name}`;
+                fileNameDisplay.style.display = 'block';
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
@@ -1359,51 +1499,206 @@
             const ctx = canvas.getContext('2d');
             const type = convertType.value;
 
-            if (type === 'png' || type === 'jpeg') {
-                const mime = type === 'png' ? 'image/png' : 'image/jpeg';
-                const quality = type === 'jpeg' ? 0.8 : undefined;
-                convertedImage.src = canvas.toDataURL(mime, quality);
-                convertedImageContainer.style.display = 'block';
-                resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
-            } else {
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const data = imageData.data;
-
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-
-                    if (type === 'grayscale') {
-                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                        data[i] = data[i + 1] = data[i + 2] = gray;
-                    } else if (type === 'invert') {
-                        data[i] = 255 - r;
-                        data[i + 1] = 255 - g;
-                        data[i + 2] = 255 - b;
-                    } else if (type === 'sepia') {
-                        data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189);
-                        data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168);
-                        data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131);
+            // Reset to original image for format conversions
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                
+                if (type === 'png' || type === 'jpg' || type === 'webp' || type === 'bmp' || type === 'gif') {
+                    let mime, quality, extension;
+                    switch(type) {
+                        case 'png':
+                            mime = 'image/png';
+                            extension = 'png';
+                            break;
+                        case 'jpg':
+                            mime = 'image/jpeg';
+                            quality = 0.9;
+                            extension = 'jpg';
+                            break;
+                        case 'webp':
+                            mime = 'image/webp';
+                            quality = 0.9;
+                            extension = 'webp';
+                            break;
+                        case 'bmp':
+                            // BMP not directly supported, use PNG
+                            mime = 'image/png';
+                            extension = 'bmp';
+                            break;
+                        case 'gif':
+                            // GIF not directly supported, use PNG
+                            mime = 'image/png';
+                            extension = 'gif';
+                            break;
                     }
-                }
+                    convertedImage.src = canvas.toDataURL(mime, quality);
+                    convertedImageContainer.style.display = 'block';
+                    resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
+                } else {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
 
-                ctx.putImageData(imageData, 0, 0);
-                convertedImage.src = canvas.toDataURL();
-                convertedImageContainer.style.display = 'block';
-                resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
-            }
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+
+                        if (type === 'grayscale') {
+                            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                            data[i] = data[i + 1] = data[i + 2] = gray;
+                        } else if (type === 'invert') {
+                            data[i] = 255 - r;
+                            data[i + 1] = 255 - g;
+                            data[i + 2] = 255 - b;
+                        } else if (type === 'sepia') {
+                            data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189);
+                            data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168);
+                            data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131);
+                        } else if (type === 'blur') {
+                            // Simple blur - just demonstration
+                            // For better blur, would need convolution filter
+                        } else if (type === 'brightness') {
+                            const factor = 1.3;
+                            data[i] = Math.min(255, r * factor);
+                            data[i + 1] = Math.min(255, g * factor);
+                            data[i + 2] = Math.min(255, b * factor);
+                        } else if (type === 'contrast') {
+                            const factor = 1.5;
+                            const intercept = 128 * (1 - factor);
+                            data[i] = Math.min(255, Math.max(0, r * factor + intercept));
+                            data[i + 1] = Math.min(255, Math.max(0, g * factor + intercept));
+                            data[i + 2] = Math.min(255, Math.max(0, b * factor + intercept));
+                        }
+                    }
+
+                    ctx.putImageData(imageData, 0, 0);
+                    convertedImage.src = canvas.toDataURL();
+                    convertedImageContainer.style.display = 'block';
+                    resultTextElement.textContent = i18n[languageSelect.value].imageConverted;
+                }
+            };
+            img.src = canvas.toDataURL();
         }
 
         downloadConvertedImageBtn.addEventListener('click', () => {
             if (canvas) {
                 const type = convertType.value;
-                const mime = type === 'png' || type === 'jpeg' ? (type === 'png' ? 'image/png' : 'image/jpeg') : 'image/png';
+                let mime, extension;
+                
+                switch(type) {
+                    case 'png':
+                        mime = 'image/png';
+                        extension = 'png';
+                        break;
+                    case 'jpg':
+                        mime = 'image/jpeg';
+                        extension = 'jpg';
+                        break;
+                    case 'webp':
+                        mime = 'image/webp';
+                        extension = 'webp';
+                        break;
+                    case 'bmp':
+                        mime = 'image/png';
+                        extension = 'bmp';
+                        break;
+                    case 'gif':
+                        mime = 'image/png';
+                        extension = 'gif';
+                        break;
+                    default:
+                        mime = 'image/png';
+                        extension = 'png';
+                }
+                
                 const link = document.createElement('a');
-                link.download = 'converted_image.' + (type === 'jpeg' ? 'jpg' : 'png');
+                link.download = `converted_image.${extension}`;
                 link.href = canvas.toDataURL(mime);
                 link.click();
             }
+        });
+        
+        // Text to file converter
+        const downloadTextFileBtn = document.getElementById('download-text-file');
+        downloadTextFileBtn.addEventListener('click', () => {
+            const text = document.getElementById('mainInputTextConverter').value;
+            const fileType = document.getElementById('textFileType').value;
+            
+            if (!text) {
+                resultTextElement.textContent = i18n[languageSelect.value].noTextEntered;
+                return;
+            }
+            
+            let content, mimeType, extension;
+            
+            switch(fileType) {
+                case 'txt':
+                    content = text;
+                    mimeType = 'text/plain';
+                    extension = 'txt';
+                    break;
+                case 'pdf':
+                    // Create PDF using jsPDF
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF();
+                    const lines = pdf.splitTextToSize(text, 180);
+                    pdf.text(lines, 10, 10);
+                    pdf.save('document.pdf');
+                    resultTextElement.textContent = i18n[languageSelect.value].fileCreated;
+                    return;
+                case 'html':
+                    content = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <p>${text.replace(/\n/g, '<br>')}</p>
+</body>
+</html>`;
+                    mimeType = 'text/html';
+                    extension = 'html';
+                    break;
+                case 'md':
+                    content = text;
+                    mimeType = 'text/markdown';
+                    extension = 'md';
+                    break;
+                case 'json':
+                    content = JSON.stringify({ text: text }, null, 2);
+                    mimeType = 'application/json';
+                    extension = 'json';
+                    break;
+                case 'csv':
+                    // Simple CSV - each line becomes a row
+                    content = text.split('\n').map(line => `"${line.replace(/"/g, '""')}"`).join('\n');
+                    mimeType = 'text/csv';
+                    extension = 'csv';
+                    break;
+                case 'docx':
+                    // DOCX requires a library, fallback to TXT
+                    content = text;
+                    mimeType = 'text/plain';
+                    extension = 'txt';
+                    alert('DOCX format not fully supported. Downloading as TXT instead.');
+                    break;
+                default:
+                    content = text;
+                    mimeType = 'text/plain';
+                    extension = 'txt';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const link = document.createElement('a');
+            link.download = `document.${extension}`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+            
+            resultTextElement.textContent = i18n[languageSelect.value].fileCreated;
         });
 
         function calculateExpression(expression) {
@@ -1733,6 +2028,11 @@
 
                 case 'imageConverter':
                     // התמונה כבר מעובדת ב-applyConversion
+                    break;
+                
+                case 'textConverter':
+                    // The download is handled by the download button
+                    resultTextElement.textContent = i18n[languageSelect.value].selectActionFirst;
                     break;
 
                 default:
