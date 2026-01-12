@@ -1023,8 +1023,6 @@
                     <option value="png" data-i18n="toPng">המר ל-PNG</option>
                     <option value="jpg" data-i18n="toJpg">המר ל-JPG</option>
                     <option value="webp" data-i18n="toWebp">המר ל-WebP</option>
-                    <option value="bmp" data-i18n="toBmp">המר ל-BMP</option>
-                    <option value="gif" data-i18n="toGif">המר ל-GIF</option>
                 </select>
                 <div id="converted-image-container" style="margin-top: 15px; display: none;">
                     <img id="converted-image" style="max-width: 300px; border-radius: var(--border-radius);">
@@ -1262,8 +1260,6 @@
                 toPng: "המר ל-PNG",
                 toJpg: "המר ל-JPG",
                 toWebp: "המר ל-WebP",
-                toBmp: "המר ל-BMP",
-                toGif: "המר ל-GIF",
                 chooseImage: "בחר תמונה",
                 imageConverted: "התמונה הומרה בהצלחה!",
                 textConverterLabel: "הכנס טקסט:",
@@ -1271,8 +1267,8 @@
                 textFileTypeLabel: "בחר סוג קובץ:",
                 toTxt: "TXT",
                 toPdf: "PDF",
-                toDocx: "DOCX (Word)",
                 toHtml: "HTML",
+                toMarkdown: "Markdown",
                 toMarkdown: "Markdown",
                 toJson: "JSON",
                 toCsv: "CSV",
@@ -1377,8 +1373,6 @@
                 toPng: "Convert to PNG",
                 toJpg: "Convert to JPG",
                 toWebp: "Convert to WebP",
-                toBmp: "Convert to BMP",
-                toGif: "Convert to GIF",
                 chooseImage: "Choose Image",
                 imageConverted: "Image converted successfully!",
                 textConverterLabel: "Enter text:",
@@ -1386,8 +1380,8 @@
                 textFileTypeLabel: "Choose file type:",
                 toTxt: "TXT",
                 toPdf: "PDF",
-                toDocx: "DOCX (Word)",
                 toHtml: "HTML",
+                toMarkdown: "Markdown",
                 toMarkdown: "Markdown",
                 toJson: "JSON",
                 toCsv: "CSV",
@@ -1543,7 +1537,7 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
                 
-                if (type === 'png' || type === 'jpg' || type === 'webp' || type === 'bmp' || type === 'gif') {
+                if (type === 'png' || type === 'jpg' || type === 'webp') {
                     let mime, quality, extension;
                     switch(type) {
                         case 'png':
@@ -1559,16 +1553,6 @@
                             mime = 'image/webp';
                             quality = 0.9;
                             extension = 'webp';
-                            break;
-                        case 'bmp':
-                            // BMP not directly supported, use PNG
-                            mime = 'image/png';
-                            extension = 'bmp';
-                            break;
-                        case 'gif':
-                            // GIF not directly supported, use PNG
-                            mime = 'image/png';
-                            extension = 'gif';
                             break;
                     }
                     convertedImage.src = canvas.toDataURL(mime, quality);
@@ -1661,14 +1645,6 @@
                     case 'webp':
                         mime = 'image/webp';
                         extension = 'webp';
-                        break;
-                    case 'bmp':
-                        mime = 'image/png';
-                        extension = 'bmp';
-                        break;
-                    case 'gif':
-                        mime = 'image/png';
-                        extension = 'gif';
                         break;
                     default:
                         mime = 'image/png';
