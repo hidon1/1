@@ -207,7 +207,7 @@
         }
         
         .sidebar-button:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
             box-shadow: 0 1px 4px rgba(102, 126, 234, 0.3);
         }
 
@@ -715,11 +715,6 @@
                 min-height: 44px;
             }
 
-            .sidebar-button:active {
-                transform: scale(0.96);
-                background: var(--button-hover);
-            }
-
             .category-title {
                 font-size: 0.75em;
             }
@@ -762,12 +757,6 @@
                 appearance: none;
                 min-height: 48px;
                 padding: 14px 16px;
-            }
-            
-            textarea:focus,
-            input[type="text"]:focus,
-            select:focus {
-                transform: none;
             }
 
             button {
@@ -822,20 +811,11 @@
                 }
             }
 
-            /* שיפור נראות שדות קלט */
             input[type="text"],
             textarea,
             select {
                 background: rgba(255, 255, 255, 0.95);
                 border: 2px solid rgba(102, 126, 234, 0.3);
-                color: var(--text-color);
-            }
-
-            [data-theme="dark"] input[type="text"],
-            [data-theme="dark"] textarea,
-            [data-theme="dark"] select {
-                background: rgba(45, 55, 72, 0.95);
-                border: 2px solid rgba(102, 126, 234, 0.5);
                 color: var(--text-color);
             }
             
@@ -844,6 +824,16 @@
             select:focus {
                 background: rgba(255, 255, 255, 1);
                 border-color: #667eea;
+                position: relative;
+                z-index: 10;
+            }
+
+            [data-theme="dark"] input[type="text"],
+            [data-theme="dark"] textarea,
+            [data-theme="dark"] select {
+                background: rgba(45, 55, 72, 0.95);
+                border: 2px solid rgba(102, 126, 234, 0.5);
+                color: var(--text-color);
             }
             
             [data-theme="dark"] input[type="text"]:focus,
@@ -869,14 +859,6 @@
 
             .main-content {
                 -webkit-overflow-scrolling: touch;
-            }
-            
-            /* שיפור חוויית המשתמש בעת הקלדה */
-            input[type="text"]:focus,
-            textarea:focus,
-            select:focus {
-                position: relative;
-                z-index: 10;
             }
         }
 
@@ -1203,16 +1185,18 @@
             }
         });
 
-        // שיפור התמקדות בשדות קלט במובייל
-        const allInputs = document.querySelectorAll('input[type="text"], textarea, select');
-        allInputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                // גלילה חלקה לאלמנט בפוקוס
-                setTimeout(() => {
-                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+        // שיפור התמקדות בשדות קלט במובייל בלבד
+        if (window.innerWidth <= 768) {
+            const allInputs = document.querySelectorAll('input[type="text"], textarea, select');
+            allInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    // גלילה חלקה לאלמנט בפוקוס
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                });
             });
-        });
+        }
 
         sidebarOverlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
