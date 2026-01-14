@@ -44,7 +44,7 @@
 
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -194,7 +194,7 @@
             gap: 6px;
             font-size: 12px;
             white-space: nowrap;
-            min-height: 38px;
+            min-height: 44px;
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
@@ -1203,34 +1203,15 @@
             }
         });
 
-        // שיפור תגובתיות כפתורים במכשירים ניידים
-        const allButtons = document.querySelectorAll('button, .sidebar-button');
-        allButtons.forEach(button => {
-            button.addEventListener('touchstart', function(e) {
-                this.style.transform = 'scale(0.96)';
-            }, { passive: true });
-            
-            button.addEventListener('touchend', function(e) {
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            }, { passive: true });
-        });
-        
-        // שיפור התמקדות בשדות קלט
+        // שיפור התמקדות בשדות קלט במובייל
         const allInputs = document.querySelectorAll('input[type="text"], textarea, select');
         allInputs.forEach(input => {
             input.addEventListener('focus', function() {
                 // גלילה חלקה לאלמנט בפוקוס
                 setTimeout(() => {
                     this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
+                }, 100);
             });
-            
-            // מניעת התנהגות לא צפויה בעת הקלדה
-            input.addEventListener('touchstart', function(e) {
-                e.stopPropagation();
-            }, { passive: true });
         });
 
         sidebarOverlay.addEventListener('click', () => {
