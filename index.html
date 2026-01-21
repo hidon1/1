@@ -9,43 +9,31 @@
     :root{
       --primary:#0b6efd;
       --accent:#0f62fe;
-      --bg: #ffffff;
       --muted:#6b7280;
-      --radius:12px;
       --success:#16a34a;
     }
     *{box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
     body{margin:0;background:linear-gradient(180deg,#07102a,#0f1724); color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center}
     .container{width:100%; max-width:900px; padding:28px}
-
     .card{background:linear-gradient(180deg,rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:14px; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,0.6)}
-
     h1{margin:0 0 6px 0; font-size:24px}
     p.lead{margin:0 0 18px 0; color:var(--muted)}
-
     .cf-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
     label{display:block; font-size:13px; color:#9ca3af; margin-bottom:6px}
     input[type="text"], input[type="email"], textarea{
       width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#fff; outline:none; font-size:15px
     }
     textarea{min-height:140px; resize:vertical; grid-column:1 / -1}
-
     .actions{display:flex; gap:12px; align-items:center; margin-top:12px}
     .btn{background:linear-gradient(90deg,var(--primary),var(--accent)); color:#fff; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600}
     .btn[disabled]{opacity:0.7; cursor:not-allowed}
     .status{color:var(--muted)}
-
     .success{display:none; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.12); color:var(--success); padding:12px; border-radius:10px; margin-top:12px}
     .success.show{display:block}
-
-    @media (max-width:720px){
-      .cf-grid{grid-template-columns:1fr}
-      body{padding:16px}
-    }
-
-    /* Floating contact button */
+    .error{display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.12); color:#f87171; padding:12px; border-radius:10px; margin-top:12px}
+    .error.show{display:block}
+    @media (max-width:720px){ .cf-grid{grid-template-columns:1fr} body{padding:16px} }
     .contact-btn{position:fixed; right:18px; bottom:18px; z-index:9999; background:linear-gradient(90deg,var(--primary),var(--accent)); color:#fff; border:none; padding:12px 14px; border-radius:999px; box-shadow:0 10px 30px rgba(11,103,253,0.16); cursor:pointer}
-
   </style>
 </head>
 <body>
@@ -55,8 +43,8 @@
       <h1>צור קשר</h1>
       <p class="lead">מלא את הטופס מטה ונחזור אליך בהקדם. השדות הנדרשים: שם, אימייל והודעה.</p>
 
-      <!-- הטופס שולח ל-Google Apps Script שציינת -->
-      <form id="contactForm" action="https://script.google.com/macros/s/AKfycby1kcx_eoTPB8WMucubtfehsk6GvBA__bGiXs90MlpR0eFU5Vjf0nVd6m1gZkz26O6w_Q/exec" method="POST" target="hidden_iframe" novalidate>
+      <!-- עדכן כאן אם ה-Web App URL ישתנה -->
+      <form id="contactForm" action="https://script.google.com/macros/s/AKfycbzczioCvSv7Y6eM0_fLfwaoe4RrQXCdfIvC3wReciQp7rUb88VQ_gfJwrGtD-ibdl0F7w/exec" method="POST" target="hidden_iframe" novalidate>
         <div class="cf-grid">
           <div>
             <label for="name">שם</label>
@@ -78,9 +66,10 @@
         </div>
 
         <div class="success" id="success">תודה! ההודעה נשלחה בהצלחה — נחזור אליך בהקדם.</div>
+        <div class="error" id="error">אירעה שגיאה בשליחת ההודעה. אנא נסה/י שוב מאוחר יותר.</div>
       </form>
 
-      <!-- iframe מוסתר כדי למנוע ניווט מהדף ולהימנע מבעיות CORS -->
+      <!-- iframe מוסתר כדי למנוע ניווט מההדף וללא CORS -->
       <iframe name="hidden_iframe" id="hidden_iframe" style="display:none"></iframe>
 
     </div>
@@ -94,10 +83,10 @@
       const submitBtn = document.getElementById('submitBtn');
       const status = document.getElementById('status');
       const successBox = document.getElementById('success');
+      const errorBox = document.getElementById('error');
       const iframe = document.getElementById('hidden_iframe');
       const openBtn = document.getElementById('openBtn');
 
-      // גלילה/פתיחה קלה: גלול אל הטופס כשמשתמש לוחץ על הכפתור הצף
       openBtn.addEventListener('click', function(){
         document.querySelector('.card').scrollIntoView({behavior:'smooth', block:'center'});
         document.getElementById('name').focus();
@@ -105,6 +94,37 @@
 
       let inProgress = false;
       let fallbackTimer = null;
+
+      // מאזין ל-postMessage מה-iframe (Apps Script)
+      function onMessage(e) {
+        // וולידציה: וודא שההודעה מגיעה מה-iframe שלנו
+        if (e.source !== iframe.contentWindow) return;
+        if (!e.data) return;
+
+        // e.data אמור להיות אובייקט { success: boolean, message?, error? }
+        handleServerResponse(e.data);
+      }
+      window.addEventListener('message', onMessage, false);
+
+      function handleServerResponse(data) {
+        clearTimeout(fallbackTimer);
+        inProgress = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'שלח';
+
+        if (data && data.success) {
+          status.textContent = 'ההודעה נשלחה בהצלחה.';
+          successBox.classList.add('show');
+          errorBox.classList.remove('show');
+          form.reset();
+          // להראות את ההצלחה לזמן קצר ואז להסתיר
+          setTimeout(() => { successBox.classList.remove('show'); status.textContent = 'נשמח לעזור — השאר פרטים ונחזור בהקדם.'; }, 4500);
+        } else {
+          status.textContent = 'אירעה שגיאה בשליחת ההודעה.';
+          errorBox.textContent = data && data.error ? ('שגיאה: ' + data.error) : errorBox.textContent;
+          errorBox.classList.add('show');
+        }
+      }
 
       form.addEventListener('submit', function(e){
         e.preventDefault();
@@ -120,7 +140,7 @@
         }
         const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRe.test(email)) {
-          status.textContent = 'אנא הכנס/י כ��ובת אימייל תקינה.';
+          status.textContent = 'אנא הכנס/י כתובת אימייל תקינה.';
           return;
         }
 
@@ -128,36 +148,26 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'שולח...';
         status.textContent = 'שולח את ההודעה...';
+        successBox.classList.remove('show');
+        errorBox.classList.remove('show');
 
-        const onLoad = function(){
-          finish();
-        };
-        iframe.addEventListener('load', onLoad);
-        fallbackTimer = setTimeout(finish, 10000);
-
-        // שליחה ל-iframe
-        form.submit();
-
-        function finish(){
-          if (!inProgress) return;
+        // Timeout גיבוי (במקרה ש‑postMessage לא יגיע)
+        fallbackTimer = setTimeout(() => {
           inProgress = false;
-          clearTimeout(fallbackTimer);
-          try { iframe.removeEventListener('load', onLoad); } catch(e){}
-          submitBtn.textContent = 'נשלח';
-          submitBtn.disabled = true;
-          status.textContent = 'ההודעה נשלחה בהצלחה.';
-          successBox.classList.add('show');
-          setTimeout(function(){
-            // ננקה טופס ונאפשר שליחה חדשה
-            form.reset();
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'שלח';
-            successBox.classList.remove('show');
-            status.textContent = 'נשמח לעזור — השאר פרטים ונחזור בהקדם.';
-          }, 4500);
-        }
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'שלח';
+          status.textContent = 'זמן תגובה משרת פג. אנא נסה/י שוב.';
+          errorBox.classList.add('show');
+        }, 15000);
+
+        // שליחה רגילה ל-iframe (ימנע בעיות CORS)
+        form.submit();
       });
 
+      // נקה מאזין בעת נטישה של הדף
+      window.addEventListener('beforeunload', function(){
+        window.removeEventListener('message', onMessage);
+      });
     })();
   </script>
 
