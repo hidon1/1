@@ -161,6 +161,7 @@
         }, 15000);
 
         // שליחה רגילה ל-iframe (ימנע בעיות CORS)
+        form.target = 'hidden_iframe';
         form.submit();
       });
 
