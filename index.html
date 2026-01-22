@@ -1,175 +1,177 @@
 <!doctype html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>צור קשר</title>
-
   <style>
-    :root{
-      --primary:#0b6efd;
-      --accent:#0f62fe;
-      --muted:#6b7280;
-      --success:#16a34a;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-    body{margin:0;background:linear-gradient(180deg,#07102a,#0f1724); color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center}
-    .container{width:100%; max-width:900px; padding:28px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:14px; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,0.6)}
-    h1{margin:0 0 6px 0; font-size:24px}
-    p.lead{margin:0 0 18px 0; color:var(--muted)}
-    .cf-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    label{display:block; font-size:13px; color:#9ca3af; margin-bottom:6px}
+    :root{--bg:#f7f7f7;--card:#fff;--accent:#0b74da;--muted:#666}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:#222}
+    .wrap{max-width:820px;margin:40px auto;padding:20px}
+    .card{background:var(--card);padding:24px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+    h1{margin:0 0 18px 0;text-align:right}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{display:flex;flex-direction:column;text-align:right;font-weight:600}
     input[type="text"], input[type="email"], textarea{
-      width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#fff; outline:none; font-size:15px
+      padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px;
+      direction:rtl; text-align:right;
     }
-    textarea{min-height:140px; resize:vertical; grid-column:1 / -1}
-    .actions{display:flex; gap:12px; align-items:center; margin-top:12px}
-    .btn{background:linear-gradient(90deg,var(--primary),var(--accent)); color:#fff; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600}
-    .btn[disabled]{opacity:0.7; cursor:not-allowed}
-    .status{color:var(--muted)}
-    .success{display:none; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.12); color:var(--success); padding:12px; border-radius:10px; margin-top:12px}
-    .success.show{display:block}
-    .error{display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.12); color:#f87171; padding:12px; border-radius:10px; margin-top:12px}
-    .error.show{display:block}
-    @media (max-width:720px){ .cf-grid{grid-template-columns:1fr} body{padding:16px} }
-    .contact-btn{position:fixed; right:18px; bottom:18px; z-index:9999; background:linear-gradient(90deg,var(--primary),var(--accent)); color:#fff; border:none; padding:12px 14px; border-radius:999px; box-shadow:0 10px 30px rgba(11,103,253,0.16); cursor:pointer}
+    textarea{min-height:140px;resize:vertical}
+    .row{display:flex;gap:12px;align-items:center}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+    button{background:var(--accent);color:#fff;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
+    button.secondary{background:#eee;color:#111}
+    .info{font-size:14px;color:var(--muted);text-align:right}
+    .alert{padding:12px;border-radius:6px;margin-top:12px;font-size:14px}
+    .alert.success{background:#e8f5e9;color:#1b5e20}
+    .alert.error{background:#ffebee;color:#b71c1c}
+    @media(max-width:520px){.row{flex-direction:column;align-items:stretch}}
+    .noscript{background:#fff3cd;color:#856404;padding:10px;border-radius:6px;margin-top:12px}
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <div class="card">
+  <div class="wrap">
+    <div class="card" role="main">
       <h1>צור קשר</h1>
-      <p class="lead">מלא את הטופס מטה ונחזור אליך בהקדם. השדות הנדרשים: שם, אימייל והודעה.</p>
 
-      <!-- עדכן כאן אם ה-Web App URL ישתנה -->
-      <form id="contactForm" action="https://script.google.com/macros/s/AKfycbyny42MzCBacjNyZbzWZY_oVetJ9nOlMIu970BpOlcdDxPjDSkLOM-UU-XQYbxp7qCeEQ/exec" novalidate>
-        <div class="cf-grid">
-          <div>
-            <label for="name">שם</label>
-            <input id="name" name="name" type="text" maxlength="100" placeholder="שמך המלא" required />
-          </div>
-          <div>
-            <label for="email">אימייל</label>
-            <input id="email" name="email" type="email" maxlength="254" placeholder="name@example.com" required />
-          </div>
-          <div style="grid-column:1 / -1">
-            <label for="message">הודעה</label>
-            <textarea id="message" name="message" placeholder="הכנס/י את ההודעה כאן" required></textarea>
-          </div>
-        </div>
+      <p class="info">
+        שלח/י את הפרטים שלך ונחזור אליך בהקדם. הטופס מוגש אל שרת Google Apps Script (Web App).
+      </p>
+
+      <!-- החלף את הכתובת למטה בכתובת ה‑Web App שלך (כבר מוטמעת) -->
+      <form id="contactForm" method="POST" action="https://script.google.com/macros/s/AKfycbyEVuw4ed06DjoVop7DxddHgvLohltP43XfMptz2GKRcYrhfFkwz16pA7-J5BzPq2vUSw/exec" autocomplete="on" novalidate>
+        <label>
+          שם מלא
+          <input type="text" name="name" id="name" required placeholder="שמך המלא">
+        </label>
+
+        <label>
+          אימייל
+          <input type="email" name="email" id="email" required placeholder="you@example.com">
+        </label>
+
+        <label>
+          הודעה
+          <textarea name="message" id="message" required placeholder="כתוב/י את ההודעה כאן..."></textarea>
+        </label>
 
         <div class="actions">
-          <div class="status" id="status">נשמח לעזור — השאר פרטים ונחזור בהקדם.</div>
-          <button class="btn" id="submitBtn" type="submit">שלח</button>
+          <button type="submit" id="sendBtn">שלח (AJAX)</button>
+          <button type="button" id="submitFallback" class="secondary" title="ישלח בטופס רגיל">שלח (טופס רגיל)</button>
         </div>
 
-        <div class="success" id="success">תודה! ההודעה נשלחה בהצלחה — נחזור אליך בהקדם.</div>
-        <div class="error" id="error">אירעה שגיאה בשליחת ההודעה. אנא נסה/י שוב מאוחר יותר.</div>
+        <div id="resultArea" aria-live="polite"></div>
       </form>
 
-      <!-- iframe מוסתר כדי למנוע ניווט מההדף וללא CORS -->
-      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none"></iframe>
+      <div class="noscript" style="display:none" id="noScriptNote">
+        הודעה: JavaScript מושבת בדפדפן — הטופס יישלח כבקשת POST רגילה ל‑Google Web App.
+      </div>
 
     </div>
-  </div>
 
-  <button class="contact-btn" id="openBtn">✉️ צור קשר</button>
+    <p style="text-align:right;margin-top:10px;font-size:13px;color:var(--muted)">
+      הערה: אם ה־AJAX נחסם בגלל מדיניות CORS של Web App (preflight/OPTIONS), הטופס יישלח אוטומטית כבקשת POST רגילה (אין בעיית CORS בטופס HTML).
+    </p>
+  </div>
 
   <script>
     (function(){
+      // הכתובת של ה‑Google Apps Script Web App שלך (מוטמעת)
+      const GAS_URL = "https://script.google.com/macros/s/AKfycbyEVuw4ed06DjoVop7DxddHgvLohltP43XfMptz2GKRcYrhfFkwz16pA7-J5BzPq2vUSw/exec";
+
       const form = document.getElementById('contactForm');
-      const submitBtn = document.getElementById('submitBtn');
-      const status = document.getElementById('status');
-      const successBox = document.getElementById('success');
-      const errorBox = document.getElementById('error');
-      const iframe = document.getElementById('hidden_iframe');
-      const openBtn = document.getElementById('openBtn');
+      const sendBtn = document.getElementById('sendBtn');
+      const fallbackBtn = document.getElementById('submitFallback');
+      const resultArea = document.getElementById('resultArea');
+      const noScriptNote = document.getElementById('noScriptNote');
 
-      openBtn.addEventListener('click', function(){
-        document.querySelector('.card').scrollIntoView({behavior:'smooth', block:'center'});
-        document.getElementById('name').focus();
-      });
+      // הצג הערת noscript אם JS כבוי - נבדק באמצעות CSS/JS
+      noScriptNote.style.display = 'none';
+      // אם JS עובד, נסיר אפשרות noscript; אחרת המשתמש יראה את תגית <noscript> (אין כאן תגית noscript, זו רק הודעה)
+      // (השורה הנ"ל מרוקנת את המצב המוגדר ב‑HTML למקרה הצורך)
 
-      let inProgress = false;
-      let fallbackTimer = null;
+      // ודא שהטופס מפנה כבר עכשיו ל־GAS_URL (כך שטופס רגיל תמיד יעבוד)
+      form.action = GAS_URL;
+      form.method = "POST";
 
-      // מאזין ל-postMessage מה-iframe (Apps Script)
-      function onMessage(e) {
-        // וולידציה: וודא שההודעה מגיעה מה-iframe שלנו
-        if (e.source !== iframe.contentWindow) return;
-        if (!e.data) return;
-
-        // e.data אמור להיות אובייקט { success: boolean, message?, error? }
-        handleServerResponse(e.data);
-      }
-      window.addEventListener('message', onMessage, false);
-
-      function handleServerResponse(data) {
-        clearTimeout(fallbackTimer);
-        inProgress = false;
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'שלח';
-
-        if (data && data.success) {
-          status.textContent = 'ההודעה נשלחה בהצלחה.';
-          successBox.classList.add('show');
-          errorBox.classList.remove('show');
-          form.reset();
-          // להראות את ההצלחה לזמן קצר ואז להסתיר
-          setTimeout(() => { successBox.classList.remove('show'); status.textContent = 'נשמח לעזור — השאר פרטים ונחזור בהקדם.'; }, 4500);
-        } else {
-          status.textContent = 'אירעה שגיאה בשליחת ההודעה.';
-          errorBox.textContent = data && data.error ? ('שגיאה: ' + data.error) : errorBox.textContent;
-          errorBox.classList.add('show');
-        }
+      function showMessage(text, type){
+        resultArea.innerHTML = '<div class="alert ' + (type==='success' ? 'success' : 'error') + '">' + text + '</div>';
       }
 
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        if (inProgress) return;
+      function validateFields(name, email, message){
+        if(!name || !message) return {ok:false, msg:"אנא מלא/י שם והודעה."};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailRegex.test(email)) return {ok:false, msg:"כתובת אימייל לא תקינה."};
+        return {ok:true};
+      }
 
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const message = form.message.value.trim();
-
-        if (!name || !email || !message) {
-          status.textContent = 'אנא מלא/י את כל השדות לפני השליחה.';
-          return;
-        }
-        const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRe.test(email)) {
-          status.textContent = 'אנא הכנס/י כתובת אימייל תקינה.';
-          return;
-        }
-
-        inProgress = true;
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'שולח...';
-        status.textContent = 'שולח את ההודעה...';
-        successBox.classList.remove('show');
-        errorBox.classList.remove('show');
-
-        // Timeout גיבוי (במקרה ש‑postMessage לא יגיע)
-        fallbackTimer = setTimeout(() => {
-          inProgress = false;
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'שלח';
-          status.textContent = 'זמן תגובה משרת פג. אנא נסה/י שוב.';
-          errorBox.classList.add('show');
-        }, 15000);
-
-        // שליחה רגילה ל-iframe (ימנע בעיות CORS)
+      // כפתור fallback — שולח בטופס רגיל (ללא AJAX)
+      fallbackBtn.addEventListener('click', function(){
+        // פשוט הגש את הטופס כרגיל (POST)
         form.submit();
       });
 
-      // נקה מאזין בעת נטישה של הדף
-      window.addEventListener('beforeunload', function(){
-        window.removeEventListener('message', onMessage);
+      // טיפול ב‑submit — ניסיונות AJAX עם fallback ל־form.submit()
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault(); // נמנע שליחה אוטומטית — ננסה AJAX ראשון
+        resultArea.innerHTML = "";
+        sendBtn.disabled = true;
+        sendBtn.textContent = "שולח...";
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        const v = validateFields(name, email, message);
+        if(!v.ok){
+          showMessage(v.msg, 'error');
+          sendBtn.disabled = false;
+          sendBtn.textContent = "שלח (AJAX)";
+          return;
+        }
+
+        // ניסיון לשלוח JSON (AJAX). אם ייכשל (CORS/preflight) — נחזיר ל‑form.submit()
+        fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, email: email, message: message })
+        })
+        .then(function(res){
+          // אם ה־Web App מחזיר JSON עם status: "ok" - מציגים הצלחה.
+          // אם החזרת טקסט/בעיית CORS — ייתכן שה־fetch ייזרק ל־catch.
+          if(!res.ok){
+            // אם השרת מחזיר שגיאה HTTP, נשתמש ב‑fallback
+            throw new Error('HTTP ' + res.status);
+          }
+          // נסה לקרוא JSON (הסקריפט שלנו מחזיר JSON)
+          return res.json().catch(function(){ throw new Error('invalid_json'); });
+        })
+        .then(function(json){
+          if(json && json.status === 'ok'){
+            showMessage('ההודעה נשלחה בהצלחה. תודה!', 'success');
+            form.reset();
+          } else {
+            // אם השרת החזיר error
+            showMessage('התרחשה שגיאה בעת השליחה: ' + (json && json.message ? json.message : 'unknown'), 'error');
+          }
+        })
+        .catch(function(err){
+          // אם ישנה טעות (לדוגמה CORS/preflight), נפעל לפי fallback — שלח כטופס רגיל
+          console.warn('AJAX failed, falling back to standard form POST. reason:', err);
+          // תן למשתמש הודעה קצרה ואז הגש את הטופס כרגיל
+          showMessage('לא הצלחנו לשלוח דרך AJAX (יתכן בעיית CORS). הטופס ישלח כעת כבקשת POST רגילה.', 'error');
+
+          // המתנה קצרה כדי שהמשתמש יקרא את ההודעה, ואז הגש
+          setTimeout(function(){
+            form.submit();
+          }, 800);
+        })
+        .finally(function(){
+          sendBtn.disabled = false;
+          sendBtn.textContent = "שלח (AJAX)";
+        });
       });
     })();
   </script>
-
 </body>
 </html>
