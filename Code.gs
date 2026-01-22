@@ -5,8 +5,20 @@ function doPost(e) {
   var SITE_NAME   = "שם האתר";
   /* ================= */
 
+  // Validate configuration
+  if (!OWNER_EMAIL || OWNER_EMAIL === "owner@example.com") {
+    return ContentService
+      .createTextOutput(
+        '<script>' +
+          'window.parent.postMessage(' + JSON.stringify({ success: false, error: "Server not configured" }) + ', "*");' +
+        '</script>'
+      )
+      .setMimeType(ContentService.MimeType.HTML);
+  }
+
   // Helper function to escape HTML
   function escapeHtml(text) {
+    if (text == null) return '';
     return String(text)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -45,10 +57,21 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.HTML);
   }
 
-  // Trim inputs
-  name = String(name).trim();
-  email = String(email).trim();
-  message = String(message).trim();
+  // Trim and convert inputs safely
+  name = (name == null) ? '' : String(name).trim();
+  email = (email == null) ? '' : String(email).trim();
+  message = (message == null) ? '' : String(message).trim();
+
+  // Re-check after trimming
+  if (!name || !email || !message) {
+    return ContentService
+      .createTextOutput(
+        '<script>' +
+          'window.parent.postMessage(' + JSON.stringify({ success: false, error: "Missing required fields" }) + ', "*");' +
+        '</script>'
+      )
+      .setMimeType(ContentService.MimeType.HTML);
+  }
 
   // Validate email format
   var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
