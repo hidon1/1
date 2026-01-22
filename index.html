@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>צור קשר</title>
-  <meta name="description" content="טופס יצירת קשר מעוצב ובהיר">
+  <meta name="description" content="טופס יצירת קשר מעוצב ובהיר בעברית">
   <style>
     :root{
       --bg:#f7f9fc; --card:#ffffff; --text:#222;
@@ -13,38 +13,41 @@
       --success-bg:#e8f5e9; --error-bg:#ffebee;
     }
     html,body{height:100%}
-    body{
-      margin:0; font-family:Arial, Helvetica, sans-serif;
-      background:var(--bg); color:var(--text);
-    }
-    .wrap{max-width:840px; margin:40px auto; padding:0 20px}
+    body{margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--text)}
+    .wrap{max-width:860px; margin:40px auto; padding:0 20px}
     .card{
-      background:var(--card); padding:28px; border-radius:12px;
-      box-shadow:0 12px 24px rgba(0,0,0,.06); border:1px solid var(--border);
+      background:var(--card); padding:30px; border-radius:14px;
+      border:1px solid var(--border); box-shadow:0 12px 28px rgba(0,0,0,.07);
     }
     h1{margin:0 0 8px; font-size:28px; text-align:right}
-    .subtitle{margin:0 0 20px; color:var(--muted); text-align:right}
+    .subtitle{margin:0 0 22px; color:var(--muted); text-align:right}
     form{display:flex; flex-direction:column; gap:14px}
     label{display:flex; flex-direction:column; text-align:right; font-weight:600}
     input[type="text"], input[type="email"], textarea{
-      padding:12px; border:1px solid var(--border); border-radius:10px;
-      font-size:15px; direction:rtl; text-align:right; background:#fafafa;
+      padding:12px; border:1px solid var(--border); border-radius:12px;
+      font-size:16px; direction:rtl; text-align:right; background:#fafafa;
+      transition:border-color .15s, background .15s, box-shadow .15s;
     }
-    input:focus, textarea:focus{outline:none; border-color:var(--accent); background:#fff}
-    textarea{min-height:150px; resize:vertical}
+    input:focus, textarea:focus{outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(43,138,247,.15)}
+    textarea{min-height:160px; resize:vertical}
     .row{display:flex; gap:12px}
     .row > div{flex:1}
     .actions{display:flex; gap:10px; justify-content:flex-end; margin-top:6px}
     button{
       background:var(--accent); color:#fff; padding:12px 18px; border:none;
-      border-radius:10px; cursor:pointer; font-weight:700; box-shadow:0 2px 6px rgba(43,138,247,.25);
+      border-radius:12px; cursor:pointer; font-weight:700; font-size:16px;
+      box-shadow:0 3px 10px rgba(43,138,247,.25); transition:background .15s, transform .05s;
     }
     button:hover{background:var(--accent-2)}
-    .alert{padding:12px; border-radius:10px; font-size:14px; margin-top:8px}
+    button:active{transform:translateY(1px)}
+    button[disabled]{opacity:.6; cursor:not-allowed}
+    .alert{padding:12px; border-radius:12px; font-size:14px; margin-top:8px}
     .alert.success{background:var(--success-bg); color:var(--success); border:1px solid #c8e6c9}
     .alert.error{background:var(--error-bg); color:var(--error); border:1px solid #ef9a9a}
-    .note{font-size:13px; color:var(--muted); text-align:right; margin-top:10px}
+    .note{font-size:13px; color:var(--muted); text-align:right; margin-top:12px}
     @media (max-width:560px){ .row{flex-direction:column} }
+    /* iframe נסתר לקבלת תגובת הטופס בלי לעזוב את העמוד */
+    iframe.hidden-frame{width:0;height:0;border:0;position:absolute;left:-9999px;top:-9999px}
   </style>
 </head>
 <body>
@@ -53,8 +56,15 @@
       <h1 id="title">צור קשר</h1>
       <p class="subtitle">מלא/י את פרטיך ונחזור אליך בהקדם.</p>
 
-      <!-- שמנו action לכתובת ה‑GAS כדי שטופס רגיל יעבוד גם ללא JavaScript -->
-      <form id="contactForm" method="POST" action="https://script.google.com/macros/s/AKfycbyEVuw4ed06DjoVop7DxddHgvLohltP43XfMptz2GKRcYrhfFkwz16pA7-J5BzPq2vUSw/exec" novalidate>
+      <!-- iframe נסתר: היעד שאליו יישלח הטופס. כך נשארים בעמוד, בלי לקרוא את התגובה (אין צורך ב‑CORS). -->
+      <iframe name="hiddenFrame" class="hidden-frame" id="hiddenFrame"></iframe>
+
+      <!-- פעולה: שליחה אל ה‑GAS שלך כטופס רגיל (x-www-form-urlencoded), ללא AJAX -->
+      <form id="contactForm"
+            method="POST"
+            target="hiddenFrame"
+            action="https://script.google.com/macros/s/AKfycbyEVuw4ed06DjoVop7DxddHgvLohltP43XfMptz2GKRcYrhfFkwz16pA7-J5BzPq2vUSw/exec"
+            novalidate>
         <div class="row">
           <div>
             <label for="name">שם מלא
@@ -79,16 +89,16 @@
         <div id="resultArea" aria-live="polite"></div>
       </form>
 
-      <p class="note">הטופס נשלח בצורה מאובטחת אל שרת Google Apps Script. במידה ו‑JavaScript מושבת, השליחה תתבצע כטופס רגיל.</p>
+      <p class="note">הטופס נשלח בצורה מאובטחת אל Google Apps Script. אין קריאת תגובה ב‑JavaScript ולכן אין בעיות CORS.</p>
     </div>
   </div>
 
   <script>
     (function(){
-      const GAS_URL = "https://script.google.com/macros/s/AKfycbyEVuw4ed06DjoVop7DxddHgvLohltP43XfMptz2GKRcYrhfFkwz16pA7-J5BzPq2vUSw/exec";
       const form = document.getElementById('contactForm');
       const resultArea = document.getElementById('resultArea');
       const sendBtn = document.getElementById('sendBtn');
+      const hiddenFrame = document.getElementById('hiddenFrame');
 
       function showMsg(text, type){
         resultArea.innerHTML = '<div class="alert '+(type==='success'?'success':'error')+'">'+text+'</div>';
@@ -100,57 +110,28 @@
         return "";
       }
 
-      // שליחה ב‑fetch בפורמט x-www-form-urlencoded (בקשה 'פשוטה' — אין preflight)
-      form.addEventListener('submit', async function(ev){
-        ev.preventDefault();
+      // כאשר ה‑iframe מסיים טעינה, נציג הודעת הצלחה ונאפס את הכפתור
+      hiddenFrame.addEventListener('load', function(){
+        // לא קוראים את התוכן (CORS), רק מסמנים כהשליחה הושלמה
+        showMsg("ההודעה נשלחה בהצלחה. תודה!", 'success');
+        sendBtn.disabled = false;
+        sendBtn.textContent = "שלח";
+        form.reset();
+      });
 
+      form.addEventListener('submit', function(ev){
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const message = document.getElementById('message').value.trim();
-
         const invalid = validate(name, email, message);
         if(invalid){
+          ev.preventDefault();
           showMsg(invalid, 'error');
           return;
         }
-
         sendBtn.disabled = true;
         sendBtn.textContent = "שולח...";
-
-        const params = new URLSearchParams({ name, email, message });
-
-        try {
-          const res = await fetch(GAS_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-            body: params.toString()
-          });
-
-          let ok = false, serverMsg = "";
-          // נסה JSON, ואם לא — קרא טקסט
-          try {
-            const data = await res.json();
-            ok = data && (data.status === 'ok' || data === 'OK');
-            serverMsg = data && data.message ? data.message : "";
-          } catch {
-            const txt = await res.text();
-            ok = txt.trim().toUpperCase() === 'OK';
-            serverMsg = txt.trim();
-          }
-
-          if(ok){
-            showMsg("ההודעה נשלחה בהצלחה. תודה!", 'success');
-            form.reset();
-          } else {
-            showMsg(serverMsg || "אירעה שגיאה בעת השליחה.", 'error');
-          }
-        } catch (err) {
-          showMsg("לא ניתן לשלוח כרגע. נסה/י שוב מאוחר יותר.", 'error');
-          console.error('Submit error:', err);
-        } finally {
-          sendBtn.disabled = false;
-          sendBtn.textContent = "שלח";
-        }
+        // לא מבטלים submit — ניתן לדפדפן לשלוח את הטופס אל ה‑iframe
       });
     })();
   </script>
